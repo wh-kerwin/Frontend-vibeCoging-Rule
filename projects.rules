@@ -1,0 +1,80 @@
+# Project Rules
+#
+# DISAMBIGUATION PRIORITY (for AI agents):
+# When multiple stack rules match the same file, apply the MOST SPECIFIC path prefix.
+# Tie-break order: react-native > electron > vue > react > node.fullstack.
+# Stack detection hint: check package.json for "react-native", "electron", or "vite"+"vue"
+# before falling back to generic TSX/TS matching.
+
+rule "global.typescript" {
+  applies_to = ["**/*.{ts,tsx,vue,mts,cts}"]
+  require = [
+    "TypeScript application code is strict-mode compatible",
+    "External inputs are validated at module boundaries",
+    "Public functions expose named types for parameters or return values when inference is unclear"
+  ]
+}
+
+rule "global.structure" {
+  applies_to = ["src/**"]
+  require = [
+    "Product code is organized by feature first",
+    "Shared code is moved to shared only after at least two real uses",
+    "No feature imports another feature's internal files directly"
+  ]
+}
+
+rule "global.ui" {
+  applies_to = ["src/**/*.{vue,tsx,css,scss}"]
+  require = [
+    "Every async view handles loading, empty, error, and success states",
+    "Design tokens are used for color, radius, spacing, typography, and shadow",
+    "Components keep business decisions outside reusable UI primitives"
+  ]
+}
+
+rule "global.http" {
+  applies_to = ["src/**/*.{api,service}.ts", "apps/api/**/*.ts", "server/**/*.ts"]
+  require = [
+    "HTTP calls go through the shared createHttpClient instance",
+    "Errors are normalized to AppError before reaching UI components",
+    "Auth and x-request-id trace headers are injected centrally in the client"
+  ]
+}
+
+# ── Stack rules ───────────────────────────────────────────────────────────────
+# Each rule targets files that are UNAMBIGUOUSLY part of that stack.
+# Shared config files (vite.config.ts, tsconfig.json) are NOT listed here to
+# avoid cross-stack conflicts; those are governed by global rules above.
+
+rule "vue.stack" {
+  # *.vue files and UnoCSS config are unique to this stack.
+  applies_to = ["**/*.vue", "uno.config.ts"]
+  reference = "stacks/vue/ARCHITECTURE.md"
+}
+
+rule "react.stack" {
+  # Targets TSX that lives outside known RN/Electron paths.
+  # RN and Electron take precedence when their path markers are present.
+  applies_to = ["src/features/**/*.tsx", "src/app/**/*.tsx", "src/components/**/*.tsx"]
+  reference = "stacks/react/ARCHITECTURE.md"
+}
+
+rule "node.fullstack" {
+  applies_to = ["apps/api/**", "apps/web/**", "packages/**", "tooling/**"]
+  reference = "stacks/node-fullstack/ARCHITECTURE.md"
+}
+
+rule "electron.stack" {
+  # src/main and src/preload are Electron-exclusive directories.
+  applies_to = ["src/main/**", "src/preload/**"]
+  reference = "stacks/electron/ARCHITECTURE.md"
+}
+
+rule "react-native.stack" {
+  # app/ (Expo Router) and src/features in an RN project.
+  # RN projects do NOT have uno.config.ts or tailwind.config.ts.
+  applies_to = ["app/**", "src/features/**/*.{tsx,ts}", "src/shared/storage/**", "src/shared/http/**"]
+  reference = "stacks/react-native/ARCHITECTURE.md"
+}
+
