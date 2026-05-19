@@ -61,27 +61,30 @@ Avoid:
 
 ## 3. Tokens
 
-### Colors
+Concrete token presets live as standalone CSS files under `shared/snippets/styles/`. When `/new-project` runs, the workflow writes one of these into the generated project's `src/shared/styles/tokens.css`.
 
-```css
-:root {
-  --background: #050507;
-  --foreground: #f2f2f2;
-  --surface: #101010;
-  --surface-raised: #151515;
-  --border: #3d3a39;
-  --border-strong: #5c5855;
-  --muted: #8b949e;
-  --muted-foreground: #b8b3b0;
-  --primary: #00d992;
-  --primary-soft: #2fd6a1;
-  --primary-muted: rgba(16, 185, 129, 0.16);
-  --focus: rgba(47, 214, 161, 0.55);
-  --danger: #fb565b;
-  --warning: #ffba00;
-  --info: #4cb3d4;
-}
-```
+| Preset file | Suitable for | Atmosphere |
+|---|---|---|
+| `shared/snippets/styles/tokens.shadcn.css` | Product apps, dashboards, admin tools, content sites | shadcn `new-york` OKLCH palette — neutral, light/dark via `.dark` class |
+| `shared/snippets/styles/tokens.voltagent.css` | Developer tools, AI agent platforms, observability surfaces, technical dashboards | Dark engineering command-center — near-black canvas, emerald accent |
+
+To add a new preset (e.g. for Vercel or Linear-style reference), create another `tokens.<name>.css` next to those, then list it here and update the workflow matrix for any stack that should expose it as a Stage 2 option.
+
+### Naming convention
+
+Every preset must define this minimum variable surface so primitives stay portable across presets:
+
+- `--background`, `--foreground`
+- `--card`, `--card-foreground`, `--popover`, `--popover-foreground`
+- `--primary`, `--primary-foreground`
+- `--secondary`, `--secondary-foreground`
+- `--muted`, `--muted-foreground`
+- `--accent`, `--accent-foreground`
+- `--destructive`, `--destructive-foreground`
+- `--border`, `--input`, `--ring`
+- `--radius`
+
+Optional but recommended for dev-tool presets: `--surface`, `--surface-raised`, `--border-strong`, `--primary-soft`, `--warning`, `--info`.
 
 ### Radius
 
@@ -292,28 +295,26 @@ Respect reduced-motion preferences.
 
 ## 8. Implementation Mapping
 
-### Vue / Tailwind / UnoCSS
+The generated project gets one `tokens.css` file written into `src/shared/styles/tokens.css` (from `shared/snippets/styles/tokens.<preset>.css`). Every stack reads the same variables from there.
 
-Map tokens to CSS variables, Tailwind theme, and UnoCSS shortcuts.
+### Vue / React (Tailwind v4 + optional UnoCSS)
 
-Recommended shortcuts:
+Token vars + `@theme inline` are the contract. Tailwind utilities (`bg-primary`, `text-muted-foreground`, etc.) read the vars automatically; UnoCSS shortcuts (`surface-card`, `focus-ring`) are defined in `uno.config.ts`. No JS theme config required.
+
+Recommended UnoCSS shortcuts (already in the matrix-generated `uno.config.ts`):
 
 ```ts
 {
-  'app-shell': 'min-h-screen bg-background text-foreground',
-  'surface-panel': 'rounded-lg border border-border bg-card text-card-foreground',
-  'focus-ring': 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/55',
-  'mono-block': 'font-mono rounded-md border border-border bg-card',
+  'v-stack': 'flex flex-col',
+  'h-stack': 'flex items-center',
+  'surface-card': 'rounded-lg border border-border bg-card text-card-foreground shadow-sm',
+  'focus-ring': 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
 }
 ```
 
-### React
-
-Use the same tokens through CSS variables and shadcn/ui-compatible theme names. Keep primitives in `components/ui`, product patterns in `components/patterns`, and feature surfaces in `features/*`.
-
 ### Electron
 
-Renderer follows this design system. Native window chrome, menus, and IPC status components should remain quiet and utilitarian.
+Renderer follows the chosen framework's design (vue/react matrix). Native window chrome, menus, and IPC status components should remain quiet and utilitarian.
 
 ### React Native
 
@@ -321,10 +322,12 @@ Translate the same taste without assuming web CSS:
 
 - Dark canvas.
 - Compact cards.
-- Green active states.
+- Accent active states from the preset.
 - 44px touch targets.
 - Native typography scale.
 - No hover-only affordances.
+
+When NativeWind is selected, Tailwind utility class names work; otherwise the equivalent values come from `StyleSheet.create` and the preset's hex values.
 
 ## 9. Agent Prompt Guide
 

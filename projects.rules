@@ -50,31 +50,31 @@ rule "global.http" {
 rule "vue.stack" {
   # *.vue files and UnoCSS config are unique to this stack.
   applies_to = ["**/*.vue", "uno.config.ts"]
-  reference = "stacks/vue/ARCHITECTURE.md"
+  reference = "boundaries/vue/ARCHITECTURE.md"
 }
 
 rule "react.stack" {
   # Targets TSX that lives outside known RN/Electron paths.
   # RN and Electron take precedence when their path markers are present.
   applies_to = ["src/features/**/*.tsx", "src/app/**/*.tsx", "src/components/**/*.tsx"]
-  reference = "stacks/react/ARCHITECTURE.md"
+  reference = "boundaries/react/ARCHITECTURE.md"
 }
 
 rule "node.fullstack" {
   applies_to = ["apps/api/**", "apps/web/**", "packages/**", "tooling/**"]
-  reference = "stacks/node-fullstack/ARCHITECTURE.md"
+  reference = "boundaries/node-fullstack/ARCHITECTURE.md"
 }
 
 rule "electron.stack" {
   # src/main and src/preload are Electron-exclusive directories.
   applies_to = ["src/main/**", "src/preload/**"]
-  reference = "stacks/electron/ARCHITECTURE.md"
+  reference = "boundaries/electron/ARCHITECTURE.md"
 }
 
 rule "react-native.stack" {
   # app/ (Expo Router) and src/features in an RN project.
   # RN projects do NOT have uno.config.ts or tailwind.config.ts.
   applies_to = ["app/**", "src/features/**/*.{tsx,ts}", "src/shared/storage/**", "src/shared/http/**"]
-  reference = "stacks/react-native/ARCHITECTURE.md"
+  reference = "boundaries/react-native/ARCHITECTURE.md"
 }
 

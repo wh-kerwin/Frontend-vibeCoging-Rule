@@ -28,19 +28,19 @@ Vibe coding here means fast product intuition with strict engineering rails:
 
 When modifying a project:
 
-1. Read the stack-specific architecture file under `stacks/`.
+1. Read the stack-specific architecture file under `boundaries/<stack>/`.
 2. Inspect existing code patterns before editing.
 3. Make the narrowest change that satisfies the request.
-4. Add or update examples/templates when a new convention is introduced.
+4. Add or update examples/snippets when a new convention is introduced.
 5. Run the relevant checks listed in the stack file.
 6. Report changed files and verification results.
 
 When creating a new project:
 
-1. Choose the closest stack from `stacks/`.
-2. Copy relevant files from `templates/`.
-3. Keep the generated structure minimal until the product needs more.
-4. Document deviations in the project README.
+- Run `/new-project` (Claude Code slash command) — it executes `workflows/new-project.md` interactively.
+- For other AI tools, read `workflows/new-project.md` directly and follow it stage by stage.
+- The workflow asks for project type, UI library, atomic CSS, and package manager, then generates a complete project assembled from `boundaries/<stack>/ARCHITECTURE.md`, `workflows/matrices/<stack>.matrix.md`, and `shared/snippets/**`.
+- Do not pre-write static templates. The workflow is the single entry point.
 
 ## Naming
 
@@ -64,10 +64,11 @@ When creating a new project:
 
 ## Stack Index
 
-- Vue: `stacks/vue/ARCHITECTURE.md`
-- React: `stacks/react/ARCHITECTURE.md`
-- Node full stack: `stacks/node-fullstack/ARCHITECTURE.md`
-- Electron: `stacks/electron/ARCHITECTURE.md`
-- React Native: `stacks/react-native/ARCHITECTURE.md`
-- Shared conventions: `shared/`
+- Vue: `boundaries/vue/ARCHITECTURE.md` — matrix: `workflows/matrices/vue.matrix.md`
+- React: `boundaries/react/ARCHITECTURE.md` — matrix: `workflows/matrices/react.matrix.md`
+- Node full stack: `boundaries/node-fullstack/ARCHITECTURE.md` — matrix: `workflows/matrices/node-fullstack.matrix.md`
+- Electron: `boundaries/electron/ARCHITECTURE.md` (+ `security-checklist.md`) — matrix: `workflows/matrices/electron.matrix.md`
+- React Native: `boundaries/react-native/ARCHITECTURE.md` — matrix: `workflows/matrices/react-native.matrix.md`
+- Cross-stack rules: `boundaries/common/` (coding-style, design-system, http-contract, directory-rules, async-states, encapsulation)
+- Reusable code snippets: `shared/snippets/`
 
