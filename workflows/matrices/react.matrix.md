@@ -196,6 +196,8 @@ When `build_tool: next` is selected, set `"rsc": true` and adjust aliases to the
 | `tsconfig.json` | `shared/snippets/config/tsconfig.strict.json` + add `"jsx": "react-jsx"` |
 | `eslint.config.js` | `shared/snippets/config/eslint.flat.ts.js` + add `eslint-plugin-react-hooks` block |
 | `.env.example` | `shared/snippets/config/env.example` with `%API_BASE_VAR%` → `VITE_API_BASE_URL` (vite) or `NEXT_PUBLIC_API_BASE_URL` (next) |
+| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `routes` (vite) / `pages` (next), `%DATA_DIR%` → `hooks`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (hook)` |
+| `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `src/main.tsx` (vite) / `app/layout.tsx` (next) | Inline — provider stack assembled from selected choices |
 | `src/App.tsx` (vite) / `app/page.tsx` (next) | Inline minimal placeholder |
 | `src/shared/http/client.ts` | `shared/snippets/http/client.web.ts` with placeholder substituted |

@@ -199,6 +199,8 @@ export default defineConfig({
 | `tsconfig.json` | `shared/snippets/config/tsconfig.strict.json` + add `"jsx": "preserve"` |
 | `eslint.config.js` | `shared/snippets/config/eslint.flat.ts.js` + add `eslint-plugin-vue` block |
 | `.env.example` | `shared/snippets/config/env.example` with `%API_BASE_VAR%` → `VITE_API_BASE_URL` |
+| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `views`, `%DATA_DIR%` → `composables`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (composable)` |
+| `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `src/main.ts` | Inline — `createApp(App)` + selected plugins (router/pinia/Query) + mount |
 | `src/App.vue` | Inline minimal shell — `<RouterView />` if router, else `<HelloWorld />` placeholder |
 | `src/shared/http/client.ts` | `shared/snippets/http/client.web.ts` with `%API_BASE_VAR%` → `VITE_API_BASE_URL` |

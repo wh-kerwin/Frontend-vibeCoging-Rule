@@ -186,7 +186,7 @@ For Claude Code: cap each `AskUserQuestion` call at 4 questions; split into two 
 
 ## Stage 4 — Generation
 
-Three substages, in order. Announce each substage start.
+Four substages, in order. Announce each substage start.
 
 ### 4A — Skeleton (write assembled files)
 
@@ -210,7 +210,58 @@ For each `snippets:` entry in the matrix (and the `Universal writes` table's sni
 
 If `boundaries/common/design-system.md` shows the user picked a non-default token preset (e.g. VoltAgent for dev tools), write `tokens.voltagent.css` instead of `tokens.shadcn.css`. Default is `tokens.shadcn.css`.
 
-### 4C — CLIs
+### 4C — Project-level AGENT.md and CLAUDE.md
+
+These two files are written into the root of the generated project so that future AI sessions (Claude Code, Codex, Cursor, Cline) and human contributors share the same contract for **this specific project's** stack choices. They also encode the hard rule that future page generation / image-to-code work must use the chosen UI library instead of hand-rolling components.
+
+Fetch the templates per the **Fetch strategy** at the top of this workflow:
+
+- `shared/snippets/project-docs/AGENT.md.tmpl` → write to `AGENT.md` in the project root.
+- `shared/snippets/project-docs/CLAUDE.md.tmpl` → write to `CLAUDE.md` in the project root.
+
+Substitute the following placeholders from the user's Stage 1–3 answers. **All values come from the resolved choices summarized in Stage 3** — do not leave any token unreplaced.
+
+| Placeholder | Replace with | Example |
+|---|---|---|
+| `%PACKAGE_NAME%` | Project name (folder name or user-provided `name`) | `my-app` |
+| `%STACK%` | Stage 1 `stack` answer | `vue`, `react`, `react-native`, `electron`, `node-fullstack` |
+| `%UI_LIBRARY%` | Stage 1 `ui_library` (or renderer-delegated value for electron/node-fullstack) | `shadcn-vue (Reka UI primitives)`, `shadcn-ui (Radix primitives)`, `native-primitives`, etc. |
+| `%ATOMIC_CSS%` | Stage 1 `atomic_css` | `tailwind-v4+unocss`, `nativewind`, `none` |
+| `%ROUTING%` | Resolved `routing` | `vue-router`, `react-router`, `expo-router`, `app-router (next)`, `none` |
+| `%STATE_LIB%` | Resolved `state` | `pinia`, `zustand`, `jotai`, `redux-toolkit`, `none` |
+| `%DATA_LIB%` | Resolved `data` | `@tanstack/vue-query`, `@tanstack/react-query`, `swr`, `fetch-only` |
+| `%FORMS_LIB%` | Resolved `forms` | `vee-validate + zod`, `react-hook-form + zod`, `none` |
+| `%TESTS_LIB%` | Resolved `tests` | `vitest`, `vitest + jest-expo`, `none` |
+| `%ANIMATION_LIB%` | Resolved `animation` | `motion-v`, `motion`, `react-native-reanimated`, `none` |
+| `%ICONS_LIB%` | Matrix's `icons` default (or user override) | `@lucide/vue`, `lucide-react`, `lucide-react-native` |
+| `%PACKAGE_MANAGER%` | Stage 1 `package_manager` | `pnpm`, `npm`, `yarn`, `bun` |
+| `%DATA_DIR%` | `composables/` (vue) or `hooks/` (react / react-native) | `composables` / `hooks` |
+| `%DATA_HOOK_PATTERN%` | `use<Name>.ts (composable)` / `use<Name>.ts (hook)` | per stack |
+| `%VIEWS_DIR%` | `views/` (vue) / `routes/` (react) / `screens/` (react-native) / `pages/` (next) | per stack |
+| `%REPO_RAW_BASE%` | Same RAW base URL used to fetch this workflow | `https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/` |
+| `%UI_INSTALL_HINT%` | Multi-line install hint formatted as a fenced bash block; mapping table below | see table |
+| `%UI_INSTALL_HINT_INLINE%` | One-line version of the same hint (no fence) for inline reference | see table |
+
+**UI install hint mapping** (substitute as a single fenced ` ```bash ` block for `%UI_INSTALL_HINT%`, and as plain inline text for `%UI_INSTALL_HINT_INLINE%`):
+
+| `ui_library` | `%UI_INSTALL_HINT_INLINE%` |
+|---|---|
+| `shadcn-vue` | `%PACKAGE_MANAGER% dlx shadcn-vue@latest add <component>` |
+| `shadcn-ui` | `%PACKAGE_MANAGER% dlx shadcn@latest add <component>` |
+| `naive-ui` | `import { NButton, NCard, ... } from 'naive-ui'` (already installed) |
+| `element-plus` | `import { ElButton, ElCard, ... } from 'element-plus'` (already installed) |
+| `ant-design-vue` | `import { Button, Card, ... } from 'ant-design-vue'` (already installed) |
+| `headless-only` (vue) | `import { ... } from 'reka-ui'` (compose your own component) |
+| `mantine` | `import { Button, Card, ... } from '@mantine/core'` (already installed) |
+| `chakra` | `import { Button, Card, ... } from '@chakra-ui/react'` (already installed) |
+| `radix-only` | `%PACKAGE_MANAGER% add @radix-ui/react-<primitive>` |
+| `native-primitives` | `// no install — compose with View / Text / Pressable from 'react-native'` |
+| `tamagui` | `import { Button, Card } from 'tamagui'` (already installed) |
+| `gluestack` | `import { Button, Card } from '@gluestack-ui/themed'` (already installed) |
+
+When `%UI_INSTALL_HINT%` is the fenced form, ALWAYS pre-substitute `%PACKAGE_MANAGER%` inside the hint before writing — the project files should show literal `pnpm`/`npm`/`yarn`/`bun`, not the placeholder.
+
+### 4D — CLIs
 
 Run `<package_manager> install`. Then announce any framework CLIs from the matrix's `Post-init CLI` table:
 
@@ -231,6 +282,8 @@ Files generated: <N>
   components.json
   uno.config.ts
   .env.example
+  AGENT.md                                 (snippet: project-docs/AGENT.md.tmpl)
+  CLAUDE.md                                (snippet: project-docs/CLAUDE.md.tmpl)
   src/main.ts
   src/App.vue
   src/shared/http/client.ts                (snippet: http/client.web.ts)
@@ -249,8 +302,10 @@ Next steps:
   1. Fill in .env.local from .env.example (VITE_API_BASE_URL)
   2. Run: pnpm dev
   3. Recommended checks before committing: pnpm typecheck && pnpm lint && pnpm test
-  4. Read boundaries/common/ for cross-stack rules
-  5. Read boundaries/vue/ARCHITECTURE.md for Vue-specific rules
+  4. Read AGENT.md and CLAUDE.md in this project — they encode the per-project rules
+     (including: use the chosen UI library, never hand-roll components).
+  5. For deeper boundaries, fetch boundaries/common/ and boundaries/<stack>/ from the
+     canonical repo when needed.
 
 Open questions for you:
   - Auth strategy (none selected)

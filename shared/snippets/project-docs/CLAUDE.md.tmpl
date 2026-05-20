@@ -1,0 +1,75 @@
+# Claude Project Instructions — %PACKAGE_NAME%
+
+**Primary contract: `AGENT.md`.** Read it first. This file lists Claude / Cursor specific adaptations only.
+
+## Tech stack snapshot (must match AGENT.md)
+
+- Stack: %STACK%
+- UI library: %UI_LIBRARY% — add components with: %UI_INSTALL_HINT_INLINE%
+- Atomic CSS: %ATOMIC_CSS%
+- Icons: %ICONS_LIB%
+- Tests: %TESTS_LIB%
+- Package manager: %PACKAGE_MANAGER%
+
+## Required read order
+
+1. `AGENT.md` (this project) — engineering rules and the "use the UI library, don't hand-roll" hard rule.
+2. Canonical boundaries (fetch when needed):
+   - `%REPO_RAW_BASE%boundaries/%STACK%/ARCHITECTURE.md`
+   - `%REPO_RAW_BASE%boundaries/common/` — coding-style, directory-rules, encapsulation, http-contract, async-states, design-system
+3. Existing files in the target area before editing.
+
+## Working style (Claude / Cursor specific)
+
+- **Minimal edits.** Touch only what the task requires. Inspect a dirty worktree before any write.
+- **Snippets are canonical.** Shared infra (HTTP client, `AppError`, `cn`, tokens) lives at `%REPO_RAW_BASE%shared/snippets/` — fetch verbatim when missing, never re-author.
+- **No broad rewrites** unless the user explicitly asks for a migration.
+- **State assumptions** before acting, especially around auth, env vars, DB shape, and design intent.
+- **Ask one question at a time** in plan mode. Do not dump multi-question forms.
+
+## The library-first rule (restated)
+
+When asked to build a new page or restore a page from a reference image:
+
+1. Enumerate the `%UI_LIBRARY%` primitives the design needs **before** opening any file.
+2. If a primitive is missing locally, install it:
+   ```
+   %UI_INSTALL_HINT_INLINE%
+   ```
+3. Compose those primitives. Use `%ATOMIC_CSS%` only for the layout grid between them.
+4. Only write a custom component when no library primitive fits, **and** state that explicitly in your response.
+
+A pixel-perfect copy of a `<button>` made out of `<div>` + Tailwind classes is wrong even if it visually matches. The library guarantees a11y, focus order, keyboard support, themeability, RTL, and parity across screens.
+
+## Output format
+
+**Implementation task** — end every response with:
+
+```
+Files changed: <list>
+Checks run: <commands + pass/fail>
+Known gaps: <list or "none">
+```
+
+**Architecture / planning task** — end with:
+
+```
+Recommended shape: <one paragraph>
+Tree change: <only the deltas, not the full tree>
+Snippets/matrix entries to use: <list>
+```
+
+## Vibe coding guardrails
+
+Fast is acceptable only when the result is easy to inspect:
+
+- Clear modules over magic configuration.
+- Typed boundaries over shape-explaining comments.
+- Small reusable primitives over large universal components.
+- Boring data flow over clever state synchronization.
+- All four async UI states (loading / empty / error / success) — never just the success path.
+- Library primitives over hand-rolled markup — always (see AGENT.md R1).
+
+## When in doubt
+
+Read `AGENT.md` again. The rules there are the contract.
