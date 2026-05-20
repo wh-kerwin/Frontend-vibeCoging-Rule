@@ -72,3 +72,16 @@ When creating a new project:
 - Cross-stack rules: `boundaries/common/` (coding-style, design-system, http-contract, directory-rules, async-states, encapsulation)
 - Reusable code snippets: `shared/snippets/`
 
+## Canonical source
+
+This repo is published at:
+
+```
+GitHub:    https://github.com/wh-kerwin/Frontend-vibeCoging-Rule
+Branch:    main
+RAW base:  https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/
+API base:  https://api.github.com/repos/wh-kerwin/Frontend-vibeCoging-Rule/contents/
+```
+
+The workflow fetches files from GitHub at runtime — the user does not need a local clone in the target project. See `README.md` for the per-AI-tool memory config that points to this repo.
+
