@@ -84,7 +84,7 @@
         },
         "icons": {
           "type": "string",
-          "enum": ["@lucide/vue", "lucide-react", "lucide-react-native"],
+          "enum": ["lucide-vue-next", "lucide-react", "lucide-react-native"],
           "description": "Icon library"
         },
         "rendererFramework": {

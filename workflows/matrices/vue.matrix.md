@@ -29,7 +29,7 @@ Use caret ranges in generated `package.json` unless a known major regression dem
 | `forms` | `vee-validate+zod` |
 | `tests` | `vitest` |
 | `animation` | `motion-v` |
-| `icons` | `@lucide/vue` |
+| `icons` | `lucide-vue-next` |
 
 ## Choices
 
@@ -129,7 +129,7 @@ export default defineConfig({
 ```
 
 #### `tailwind-v4`
-- Same as above minus UnoCSS pieces. No `uno.config.ts`. Use `@lucide/vue` for all icons.
+- Same as above minus UnoCSS pieces. No `uno.config.ts`. Use `lucide-vue-next` for all icons.
 
 #### `unocss`
 - `dev_deps`: `unocss ^66.6`, `@unocss/reset ^66.6`, `@iconify-json/lucide ^1.2`

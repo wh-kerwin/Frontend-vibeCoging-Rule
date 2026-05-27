@@ -73,9 +73,8 @@ When a different UI library is selected (Naive UI, Element Plus, Ant Design Vue)
 
 ## Icons
 
-- Inside `.vue` component code: import named components from the chosen icon library. With the default matrix this is `@lucide/vue` (`import { ArrowRight } from '@lucide/vue'`).
+- Inside `.vue` component code: import named components from the chosen icon library. With the default matrix this is `lucide-vue-next` (`import { ArrowRight } from 'lucide-vue-next'`).
 - Inside template-only class usage with UnoCSS: use `i-lucide-arrow-right`.
-- The deprecated `lucide-vue-next` package must not be used.
 
 ## Animation
 

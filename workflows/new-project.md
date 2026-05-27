@@ -264,7 +264,7 @@ Substitute the following placeholders from the user's Stage 1–3 answers. **All
 | `%FORMS_LIB%` | Resolved `forms` | `vee-validate + zod`, `react-hook-form + zod`, `none` |
 | `%TESTS_LIB%` | Resolved `tests` | `vitest`, `vitest + jest-expo`, `none` |
 | `%ANIMATION_LIB%` | Resolved `animation` | `motion-v`, `motion`, `react-native-reanimated`, `none` |
-| `%ICONS_LIB%` | Matrix's `icons` default (or user override) | `@lucide/vue`, `lucide-react`, `lucide-react-native` |
+| `%ICONS_LIB%` | Matrix's `icons` default (or user override) | `lucide-vue-next`, `lucide-react`, `lucide-react-native` |
 | `%PACKAGE_MANAGER%` | Stage 1 `package_manager` | `pnpm`, `npm`, `yarn`, `bun` |
 | `%DATA_DIR%` | `composables/` (vue) or `hooks/` (react / react-native) | `composables` / `hooks` |
 | `%DATA_HOOK_PATTERN%` | `use<Name>.ts (composable)` / `use<Name>.ts (hook)` | per stack |

@@ -10,7 +10,7 @@ export const STACK_DEFAULTS: Record<Stack, Record<string, string>> = {
     forms: 'vee-validate+zod',
     tests: 'vitest',
     animation: 'motion-v',
-    icons: '@lucide/vue',
+    icons: 'lucide-vue-next',
   },
   react: {
     buildTool: 'vite',

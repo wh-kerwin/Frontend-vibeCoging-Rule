@@ -20,7 +20,7 @@
     "forms": "vee-validate+zod",
     "tests": "vitest",
     "animation": "motion-v",
-    "icons": "@lucide/vue"
+    "icons": "lucide-vue-next"
   },
   "dimensions": {
     "uiLibrary": {
