@@ -17,6 +17,10 @@ This file is the primary contract for **any AI agent** (Claude Code, Codex, Curs
 | Tests | %TESTS_LIB% |
 | Animation | %ANIMATION_LIB% |
 | Icons | %ICONS_LIB% |
+| Theme | %THEME_MODE% |
+| Theme preset | %THEME_PRESET% |
+| I18n | %I18N_LIBRARY% |
+| Default locale | %DEFAULT_LOCALE% |
 | Package manager | %PACKAGE_MANAGER% |
 
 Change any line above only by re-running the generator or by **deliberate** refactor; ad-hoc swaps break the conventions that downstream rules assume.
@@ -106,6 +110,14 @@ Module-scoped `let` variables are forbidden.
 ### R10 — Stop on uncertainty
 
 If a requirement is ambiguous (auth shape, backend origin, error semantics, design intent), **ask before coding**. Silent assumptions are the most expensive bugs in this codebase.
+
+### R11 — Theme via provider, not ad-hoc
+
+Theme mode is `%THEME_MODE%`. Use the theme provider (`useTheme()`) for all theme-dependent logic. Never read `localStorage`, `Appearance`, or media queries directly — the provider already does that. Token values come from `tokens.css` — never duplicate color definitions.
+
+### R12 — I18n keys grouped by feature
+
+I18n library: `%I18N_LIBRARY%`. When i18n is enabled, all user-facing strings must come from locale files (`src/locales/`). Keys are grouped by feature (`feature.fieldName`), not by page. Never scatter loose string keys at the top level of the locale file.
 
 ## Naming
 

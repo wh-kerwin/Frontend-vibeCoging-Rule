@@ -1,0 +1,110 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_description": "Global configuration dimensions applied across all stacks. Stack-specific options are in <stack>.options.json.",
+  "dimensions": {
+    "theme": {
+      "question": "Theme switching strategy",
+      "default": "light-dark-system",
+      "choices": [
+        {
+          "value": "light-dark-system",
+          "label": "Light / Dark / System (recommended)",
+          "description": "Supports system preference detection, manual toggle, and persistence."
+        },
+        {
+          "value": "light-only",
+          "label": "Light only",
+          "description": "Only generates light tokens. No theme switcher."
+        },
+        {
+          "value": "dark-only",
+          "label": "Dark only",
+          "description": "Only generates dark tokens. Suited for dashboards and dev tools."
+        },
+        {
+          "value": "custom-token-preset",
+          "label": "Custom token preset",
+          "description": "Use a user-specified token preset file."
+        }
+      ]
+    },
+    "themePreset": {
+      "question": "Design token preset",
+      "default": "shadcn-neutral",
+      "dependsOn": { "theme": ["light-dark-system", "light-only", "dark-only"] },
+      "choices": [
+        {
+          "value": "shadcn-neutral",
+          "label": "shadcn neutral (recommended)",
+          "description": "Standard neutral palette from shadcn/ui."
+        },
+        {
+          "value": "voltagent",
+          "label": "VoltAgent dark engineering",
+          "description": "Dark command-center theme for dev tool products."
+        }
+      ]
+    },
+    "i18n": {
+      "question": "Internationalization",
+      "default": "none",
+      "choices": [
+        {
+          "value": "none",
+          "label": "No i18n (recommended)",
+          "description": "No internationalization. Hard-coded strings only."
+        },
+        {
+          "value": "vue-i18n",
+          "label": "vue-i18n",
+          "description": "Vue I18n for Vue projects.",
+          "applicableStacks": ["vue"]
+        },
+        {
+          "value": "react-i18next",
+          "label": "react-i18next",
+          "description": "i18next + react-i18next for React projects.",
+          "applicableStacks": ["react"]
+        },
+        {
+          "value": "expo-localization+i18next",
+          "label": "expo-localization + i18next",
+          "description": "expo-localization for locale detection + i18next for translations.",
+          "applicableStacks": ["react-native"]
+        }
+      ]
+    },
+    "defaultLocale": {
+      "question": "Default locale",
+      "default": "zh-CN",
+      "dependsOn": { "i18n": ["vue-i18n", "react-i18next", "expo-localization+i18next"] },
+      "freeText": true
+    },
+    "locales": {
+      "question": "Supported locales (comma-separated)",
+      "default": ["zh-CN", "en-US"],
+      "dependsOn": { "i18n": ["vue-i18n", "react-i18next", "expo-localization+i18next"] },
+      "freeText": true,
+      "multiValue": true
+    },
+    "auth": {
+      "question": "Authentication strategy",
+      "default": "none",
+      "choices": [
+        {
+          "value": "none",
+          "label": "None (placeholder)",
+          "description": "No auth scaffolding. Add manually later."
+        }
+      ]
+    }
+  },
+  "envStrategy": {
+    "_description": "Environment variable strategy per stack (not user-selectable)",
+    "vue": "import.meta.env.VITE_*",
+    "react": "import.meta.env.VITE_* (vite) | process.env.NEXT_PUBLIC_* (next)",
+    "react-native": "process.env.EXPO_PUBLIC_*",
+    "electron": "import.meta.env.VITE_* (renderer)",
+    "node-fullstack": "process.env.* (api) | import.meta.env.VITE_* (web)"
+  }
+}

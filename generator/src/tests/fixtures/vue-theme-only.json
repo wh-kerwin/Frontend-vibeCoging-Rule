@@ -1,0 +1,9 @@
+{
+  "name": "vue-theme-only",
+  "stack": "vue",
+  "packageManager": "pnpm",
+  "choices": {
+    "theme": "light-dark-system",
+    "i18n": "none"
+  }
+}

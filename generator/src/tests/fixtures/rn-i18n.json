@@ -1,0 +1,10 @@
+{
+  "name": "rn-i18n",
+  "stack": "react-native",
+  "packageManager": "pnpm",
+  "choices": {
+    "i18n": "expo-localization+i18next",
+    "defaultLocale": "zh-CN",
+    "locales": ["zh-CN", "en-US"]
+  }
+}

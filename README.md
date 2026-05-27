@@ -14,9 +14,14 @@
 - `.claude/commands/new-project.md` — Claude Code 的 `/new-project` slash command 入口。
 - `workflows/new-project.md` — 通用工作流协议,任何 AI 工具都能读懂照做。
 - `workflows/matrices/<stack>.matrix.md` — 每个技术栈的可选项矩阵与默认组合。
+- `workflows/options/<stack>.options.json` — 矩阵的机器可读版本,供生成器和测试使用。
+- `workflows/options/global.options.json` — 跨栈全局配置维度(theme、i18n、auth)。
+- `schemas/scaffold-config.schema.json` — 脚手架输入配置 JSON Schema。
+- `schemas/resolved-config.schema.json` — 解析后的完整配置 JSON Schema。
 - `boundaries/common/` — 跨技术栈的工程边界(命名、目录、组件化、HTTP、async UI 状态、coding style)。
 - `boundaries/<stack>/ARCHITECTURE.md` — 各技术栈的架构约束。
-- `shared/snippets/` — 可被工作流引用的代码片段(HTTP client、AppError、cn、tokens 等)。
+- `shared/snippets/` — 可被工作流引用的代码片段(HTTP client、AppError、cn、tokens、theme、i18n 等)。
+- `generator/` — TypeScript CLI 脚手架生成器,与 AI workflow 等价。
 
 ## 让你的 AI 工具找到这个仓库
 
@@ -78,6 +83,8 @@ export FRONTEND_RULES_ROOT=/path/to/frontend-rules
 
 ## 创建新项目
 
+### 方式一:AI Workflow(推荐)
+
 配好上面的 AI 工具配置后,在新项目目录:
 
 1. **Claude Code**: 跑 `/new-project`,自动从 GitHub fetch workflow 并执行,4 个核心问题 + 可选定制问完即生成。
@@ -87,7 +94,45 @@ export FRONTEND_RULES_ROOT=/path/to/frontend-rules
 
 1. 问 4 个必答(项目类型 / UI 库 / 原子化 CSS / 包管理器)。
 2. 可选深度定制(路由、状态、数据、表单、测试、动画)。
-3. 查矩阵 → 组装文件 → 跑必要的 CLI → 给出生成报告与下一步。
+3. 全局定制(主题切换策略 / i18n 国际化)。
+4. 查矩阵 → 组装文件 → 跑必要的 CLI → 给出生成报告与下一步。
+
+### 方式二:Generator CLI
+
+本仓库提供了一个 TypeScript CLI 生成器,与 AI workflow 产出等价的项目:
+
+```bash
+# 安装依赖
+cd generator && npm install
+
+# 交互式生成(与 AI 一样的问题流)
+npx tsx src/cli.ts scaffold --target ../my-app
+
+# 配置文件生成(跳过交互)
+npx tsx src/cli.ts scaffold --config scaffold.config.json --target ../my-app
+
+# 预览生成计划(不写磁盘)
+npx tsx src/cli.ts scaffold --stack react --target ../my-app --dry-run
+```
+
+`scaffold.config.json` 示例:
+
+```json
+{
+  "name": "my-app",
+  "stack": "react",
+  "packageManager": "pnpm",
+  "choices": {
+    "uiLibrary": "shadcn-ui",
+    "theme": "light-dark-system",
+    "i18n": "react-i18next",
+    "defaultLocale": "zh-CN",
+    "locales": ["zh-CN", "en-US"]
+  }
+}
+```
+
+两种方式共享同一套 `schemas/`、`workflows/options/`、`shared/snippets/`。Markdown 矩阵面向人和 AI,JSON options 面向生成器和测试。
 
 ## 改造已有项目
 

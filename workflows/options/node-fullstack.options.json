@@ -1,0 +1,163 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_machineReadableSource": true,
+  "_description": "Machine-readable options extracted from workflows/matrices/node-fullstack.matrix.md. The web sub-app delegates to vue.options.json or react.options.json.",
+  "stack": "node-fullstack",
+  "versionBaseline": {
+    "node": "22",
+    "pnpm": "10.x",
+    "hono": "^4.6",
+    "fastify": "^5.1",
+    "nestjs": "^11.0",
+    "drizzle-orm": "^0.36",
+    "prisma": "^6.0",
+    "kysely": "^0.27",
+    "typescript": "^5.8"
+  },
+  "defaults": {
+    "apiFramework": "hono",
+    "orm": "drizzle",
+    "database": "postgres",
+    "webFramework": null,
+    "tests": "vitest",
+    "contractsPackage": "yes"
+  },
+  "dimensions": {
+    "apiFramework": {
+      "choices": {
+        "hono": {
+          "deps": { "hono": "^4.6", "@hono/zod-validator": "^0.4", "@hono/node-server": "^1.13" },
+          "snippets": ["node/server.skeleton.ts"],
+          "writes": ["apps/api/src/server.ts"]
+        },
+        "fastify": {
+          "deps": { "fastify": "^5.1", "@fastify/cors": "^10.0", "zod-to-json-schema": "^3.23" },
+          "writes": ["apps/api/src/server.ts"]
+        },
+        "nestjs": {
+          "deps": {
+            "@nestjs/core": "^11.0",
+            "@nestjs/common": "^11.0",
+            "@nestjs/platform-express": "^11.0"
+          },
+          "commands": [
+            { "command": "nest new apps/api", "mode": "announce", "reason": "NestJS interactive scaffold" }
+          ]
+        }
+      }
+    },
+    "orm": {
+      "choices": {
+        "drizzle": {
+          "deps": { "drizzle-orm": "^0.36" },
+          "devDeps": { "drizzle-kit": "^0.30" },
+          "writes": ["packages/db/schema.ts", "drizzle.config.ts"]
+        },
+        "prisma": {
+          "deps": { "@prisma/client": "^6.0" },
+          "devDeps": { "prisma": "^6.0" },
+          "writes": ["packages/db/prisma/schema.prisma"],
+          "commands": [
+            { "command": "%PM% exec prisma init", "mode": "announce", "reason": "Interactive Prisma init" }
+          ]
+        },
+        "kysely": {
+          "deps": { "kysely": "^0.27", "pg": "^8.13" },
+          "writes": ["packages/db/types.ts", "packages/db/client.ts"]
+        }
+      }
+    },
+    "database": {
+      "choices": {
+        "postgres": {
+          "driverDeps": {
+            "drizzle": { "postgres": "^3.4" },
+            "prisma": {},
+            "kysely": { "pg": "^8.13" }
+          }
+        },
+        "mysql": {
+          "driverDeps": {
+            "drizzle": { "mysql2": "*" },
+            "prisma": {},
+            "kysely": { "mysql2": "*" }
+          }
+        },
+        "sqlite": {
+          "driverDeps": {
+            "drizzle": { "better-sqlite3": "*" },
+            "prisma": {},
+            "kysely": { "better-sqlite3": "*" }
+          }
+        }
+      }
+    },
+    "webFramework": {
+      "_note": "Asks 'vue', 'react', or 'none' in Stage 1. Triggers re-entry into that framework's matrix rooted at apps/web/.",
+      "choices": {
+        "vue": { "delegatesTo": "vue.options.json", "rootPrefix": "apps/web/" },
+        "react": { "delegatesTo": "react.options.json", "rootPrefix": "apps/web/" },
+        "none": { "_note": "API-only monorepo. No apps/web/ directory." }
+      }
+    },
+    "tests": {
+      "choices": {
+        "vitest": {
+          "devDeps": { "vitest": "^4.1", "supertest": "^7.0" },
+          "scripts": { "test": "vitest run" }
+        },
+        "none": {}
+      }
+    },
+    "contractsPackage": {
+      "choices": {
+        "yes": {
+          "snippets": ["node/feature.contract.ts"],
+          "writes": [
+            "packages/contracts/package.json",
+            "packages/contracts/index.ts",
+            "packages/contracts/user.ts"
+          ]
+        },
+        "no": {}
+      }
+    }
+  },
+  "universalDeps": {
+    "deps": {},
+    "devDeps": { "typescript": "^5.8" }
+  },
+  "universalSnippets": [
+    { "src": "config/tsconfig.strict.json", "dest": "tsconfig.json" },
+    { "src": "config/eslint.flat.ts.js", "dest": "eslint.config.js" },
+    { "src": "config/env.example", "dest": "apps/api/.env.example", "placeholders": { "%API_BASE_VAR%": "PORT" }, "extraLines": ["DATABASE_URL=postgres://user:pass@localhost:5432/dbname", "CORS_ORIGIN=http://localhost:5173"] },
+    { "src": "http/errors.server.ts", "dest": "apps/api/src/shared/http/errors.ts" },
+    { "src": "node/request-id.middleware.ts", "dest": "apps/api/src/shared/middleware/request-id.ts" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
+  ],
+  "universalWrites": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "apps/api/package.json",
+    "apps/api/src/server.ts",
+    "apps/api/src/config/env.ts"
+  ],
+  "templatePlaceholders": {
+    "%VIEWS_DIR%": "from-web-framework",
+    "%DATA_DIR%": "from-web-framework",
+    "%DATA_HOOK_PATTERN%": "from-web-framework",
+    "%API_BASE_VAR%": "PORT"
+  },
+  "webDelegationRules": [
+    "Generate web app files at apps/web/ instead of project root",
+    "Skip web app's AGENT.md and CLAUDE.md — only one set at repo root",
+    "Root AGENT.md uses web framework's resolved choices for UI dimensions",
+    "When webFramework=none, use 'n/a' for all UI dimensions"
+  ],
+  "postInitCli": [
+    { "command": "pnpm install", "mode": "auto", "reason": "Install monorepo dependencies" },
+    { "command": "pnpm --filter db drizzle-kit generate", "mode": "announce", "condition": "orm === 'drizzle'", "reason": "Generate initial Drizzle migration" },
+    { "command": "pnpm --filter db prisma init", "mode": "announce", "condition": "orm === 'prisma'", "reason": "Interactive Prisma init" }
+  ]
+}

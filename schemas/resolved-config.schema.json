@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wh-kerwin/Frontend-vibeCoging-Rule/schemas/resolved-config.schema.json",
+  "title": "Resolved Config",
+  "description": "Fully resolved configuration after merging user choices with matrix defaults. Used internally by the generator engine.",
+  "type": "object",
+  "required": ["name", "stack", "packageManager", "rootDir", "choices", "theme", "i18n"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stack": {
+      "type": "string",
+      "enum": ["vue", "react", "react-native", "electron", "node-fullstack"]
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["pnpm", "npm", "yarn", "bun"]
+    },
+    "rootDir": {
+      "type": "string",
+      "description": "Absolute path to the target project root"
+    },
+    "choices": {
+      "type": "object",
+      "description": "All resolved dimension values (every key has a concrete value, no omissions)",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "array", "items": { "type": "string" } }
+        ]
+      }
+    },
+    "theme": {
+      "type": "object",
+      "required": ["mode", "preset"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["light-dark-system", "light-only", "dark-only", "custom-token-preset"]
+        },
+        "preset": {
+          "type": "string",
+          "description": "Token preset identifier, e.g. shadcn-neutral, voltagent"
+        }
+      }
+    },
+    "i18n": {
+      "type": "object",
+      "required": ["enabled", "library", "defaultLocale", "locales"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "library": {
+          "type": ["string", "null"],
+          "enum": ["vue-i18n", "react-i18next", "expo-localization+i18next", null],
+          "description": "null when i18n is disabled"
+        },
+        "defaultLocale": {
+          "type": "string"
+        },
+        "locales": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "nested": {
+      "type": "object",
+      "description": "Sub-app configs for composite stacks (electron renderer, node-fullstack web app)",
+      "additionalProperties": false,
+      "properties": {
+        "renderer": {
+          "$ref": "#",
+          "description": "Electron renderer sub-app config"
+        },
+        "web": {
+          "$ref": "#",
+          "description": "Node full-stack web sub-app config"
+        }
+      }
+    }
+  }
+}

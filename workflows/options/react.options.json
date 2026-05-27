@@ -1,0 +1,223 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_machineReadableSource": true,
+  "_description": "Machine-readable options extracted from workflows/matrices/react.matrix.md.",
+  "stack": "react",
+  "versionBaseline": {
+    "react": "^19.2",
+    "react-dom": "^19.2",
+    "vite": "^8.0",
+    "next": "^15.0",
+    "typescript": "^5.8",
+    "node": "22",
+    "tailwindcss": "^4.3",
+    "unocss": "^66.6"
+  },
+  "defaults": {
+    "buildTool": "vite",
+    "uiLibrary": "shadcn-ui",
+    "atomicCss": "tailwind-v4+unocss",
+    "routing": "react-router",
+    "state": "zustand",
+    "data": "tanstack-query",
+    "forms": "react-hook-form+zod",
+    "tests": "vitest",
+    "animation": "motion",
+    "icons": "lucide-react"
+  },
+  "dimensions": {
+    "buildTool": {
+      "choices": {
+        "vite": {
+          "devDeps": { "vite": "^8.0", "@vitejs/plugin-react": "^4.5" },
+          "writes": ["vite.config.ts", "index.html", "src/main.tsx"]
+        },
+        "next": {
+          "deps": { "next": "^15.0" },
+          "writes": ["next.config.ts", "app/layout.tsx", "app/page.tsx"],
+          "overrides": { "routing": "app-router" }
+        }
+      }
+    },
+    "uiLibrary": {
+      "choices": {
+        "shadcn-ui": {
+          "deps": {
+            "@radix-ui/react-slot": "^1.1",
+            "class-variance-authority": "^0.7",
+            "clsx": "^2.1",
+            "tailwind-merge": "^3.3",
+            "tw-animate-css": "^1.4"
+          },
+          "devDeps": { "shadcn": "^2.4" },
+          "snippets": ["lib/cn.ts"],
+          "writes": ["components.json"],
+          "commands": [
+            { "command": "%PM% dlx shadcn@latest add button card input dialog label", "mode": "auto" }
+          ]
+        },
+        "mantine": {
+          "deps": { "@mantine/core": "^7.13", "@mantine/hooks": "^7.13" },
+          "writes": ["src/main.tsx:mantine-provider"]
+        },
+        "chakra": {
+          "deps": { "@chakra-ui/react": "^3.0", "@emotion/react": "^11.13" },
+          "writes": ["src/main.tsx:chakra-provider"]
+        },
+        "radix-only": {
+          "snippets": ["lib/cn.ts"]
+        }
+      }
+    },
+    "atomicCss": {
+      "choices": {
+        "tailwind-v4+unocss": {
+          "deps": { "tailwindcss": "^4.3" },
+          "devDeps": {
+            "@tailwindcss/vite": "^4.3",
+            "unocss": "^66.6",
+            "@iconify-json/lucide": "^1.2"
+          },
+          "devDepsNext": { "@tailwindcss/postcss": "^4.3" },
+          "snippets": ["styles/tokens.shadcn.css"],
+          "writes": ["uno.config.ts"]
+        },
+        "tailwind-v4": {
+          "deps": { "tailwindcss": "^4.3" },
+          "devDeps": { "@tailwindcss/vite": "^4.3" },
+          "devDepsNext": { "@tailwindcss/postcss": "^4.3" },
+          "snippets": ["styles/tokens.shadcn.css"]
+        },
+        "unocss": {
+          "devDeps": {
+            "unocss": "^66.6",
+            "@unocss/reset": "^66.6",
+            "@iconify-json/lucide": "^1.2"
+          },
+          "snippets": ["styles/tokens.shadcn.css"],
+          "writes": ["uno.config.ts"]
+        },
+        "none": {
+          "snippets": ["styles/tokens.shadcn.css"]
+        }
+      }
+    },
+    "routing": {
+      "choices": {
+        "react-router": {
+          "deps": { "react-router": "^7.15" },
+          "writes": ["src/app/routes/router.tsx"]
+        },
+        "app-router": {
+          "_note": "Forced when buildTool=next. File-based routing via app/ directory."
+        },
+        "none": {}
+      }
+    },
+    "state": {
+      "choices": {
+        "zustand": {
+          "deps": { "zustand": "^5.0" },
+          "writes": ["src/stores/"]
+        },
+        "jotai": {
+          "deps": { "jotai": "^2.10" }
+        },
+        "redux-toolkit": {
+          "deps": { "@reduxjs/toolkit": "^2.4", "react-redux": "^9.1" },
+          "writes": ["src/stores/store.ts"]
+        },
+        "none": {}
+      }
+    },
+    "data": {
+      "choices": {
+        "tanstack-query": {
+          "deps": { "@tanstack/react-query": "^5.100" },
+          "snippets": ["query/QueryProvider.tsx"],
+          "writes": ["src/app/providers/QueryProvider.tsx"]
+        },
+        "swr": {
+          "deps": { "swr": "^2.3" }
+        },
+        "fetch-only": {}
+      }
+    },
+    "forms": {
+      "choices": {
+        "react-hook-form+zod": {
+          "deps": {
+            "react-hook-form": "^7.54",
+            "@hookform/resolvers": "^3.10",
+            "zod": "^4.4"
+          }
+        },
+        "formik": {
+          "deps": { "formik": "^2.4", "zod": "^4.4" }
+        },
+        "none": {}
+      }
+    },
+    "tests": {
+      "choices": {
+        "vitest": {
+          "devDeps": {
+            "vitest": "^4.1",
+            "@testing-library/react": "^16.1",
+            "@testing-library/user-event": "^14.5",
+            "jsdom": "^25.0"
+          },
+          "scripts": { "test": "vitest run" },
+          "snippets": ["http/errors.test.ts"]
+        },
+        "playwright": {
+          "devDeps": { "@playwright/test": "^1.48" },
+          "_note": "E2E only; pair with vitest for unit tests."
+        },
+        "none": {}
+      }
+    },
+    "animation": {
+      "choices": {
+        "motion": {
+          "deps": { "motion": "^11.15" }
+        },
+        "none": {}
+      }
+    }
+  },
+  "universalDeps": {
+    "deps": { "react": "^19.2", "react-dom": "^19.2" },
+    "devDeps": { "typescript": "^5.8" }
+  },
+  "universalSnippets": [
+    { "src": "config/tsconfig.strict.json", "dest": "tsconfig.json", "transform": "add-jsx-react-jsx" },
+    { "src": "config/eslint.flat.ts.js", "dest": "eslint.config.js", "transform": "add-react-hooks-plugin" },
+    { "src": "config/env.example", "dest": ".env.example", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
+    { "src": "http/client.web.ts", "dest": "src/shared/http/client.ts", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
+    { "src": "http/errors.client.ts", "dest": "src/shared/http/errors.ts" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
+  ],
+  "universalWrites": [
+    "package.json",
+    "vite.config.ts",
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/config/env.ts"
+  ],
+  "templatePlaceholders": {
+    "%VIEWS_DIR%": "routes",
+    "%DATA_DIR%": "hooks",
+    "%DATA_HOOK_PATTERN%": "use<Name>.ts (hook)",
+    "%API_BASE_VAR%": "VITE_API_BASE_URL"
+  },
+  "templatePlaceholdersNext": {
+    "%VIEWS_DIR%": "pages",
+    "%API_BASE_VAR%": "NEXT_PUBLIC_API_BASE_URL"
+  },
+  "postInitCli": [
+    { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },
+    { "command": "%PM% dlx shadcn@latest add button card input dialog label", "mode": "auto", "condition": "uiLibrary === 'shadcn-ui'", "reason": "Seed shadcn-ui primitives" }
+  ]
+}

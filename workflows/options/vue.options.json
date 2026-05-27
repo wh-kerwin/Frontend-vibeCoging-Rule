@@ -1,0 +1,190 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_machineReadableSource": true,
+  "_description": "Machine-readable options extracted from workflows/matrices/vue.matrix.md. This is the authoritative source for the generator; the Markdown file remains the human-readable reference.",
+  "stack": "vue",
+  "versionBaseline": {
+    "vue": "^3.5",
+    "vite": "^8.0",
+    "typescript": "^5.8",
+    "node": "22",
+    "tailwindcss": "^4.3",
+    "unocss": "^66.6"
+  },
+  "defaults": {
+    "uiLibrary": "shadcn-vue",
+    "atomicCss": "tailwind-v4+unocss",
+    "routing": "vue-router",
+    "state": "pinia",
+    "data": "tanstack-query",
+    "forms": "vee-validate+zod",
+    "tests": "vitest",
+    "animation": "motion-v",
+    "icons": "@lucide/vue"
+  },
+  "dimensions": {
+    "uiLibrary": {
+      "choices": {
+        "shadcn-vue": {
+          "deps": {
+            "reka-ui": "^2.8",
+            "class-variance-authority": "^0.7",
+            "clsx": "^2.1",
+            "tailwind-merge": "^3.3",
+            "tw-animate-css": "^1.4"
+          },
+          "devDeps": {
+            "shadcn-vue": "^2.7"
+          },
+          "snippets": ["lib/cn.ts"],
+          "writes": ["components.json"],
+          "commands": [
+            { "command": "%PM% dlx shadcn-vue@latest add button card input dialog label", "mode": "auto" }
+          ]
+        },
+        "naive-ui": {
+          "deps": { "naive-ui": "^2.39" },
+          "writes": ["src/main.ts:naive-import"]
+        },
+        "element-plus": {
+          "deps": { "element-plus": "^2.8" },
+          "writes": ["src/main.ts:element-import"]
+        },
+        "ant-design-vue": {
+          "deps": { "ant-design-vue": "^4.2" },
+          "writes": ["src/main.ts:antdv-import"]
+        },
+        "headless-only": {
+          "deps": { "reka-ui": "^2.8" },
+          "snippets": ["lib/cn.ts"]
+        }
+      }
+    },
+    "atomicCss": {
+      "choices": {
+        "tailwind-v4+unocss": {
+          "deps": { "tailwindcss": "^4.3" },
+          "devDeps": {
+            "@tailwindcss/vite": "^4.3",
+            "unocss": "^66.6",
+            "@unocss/reset": "^66.6",
+            "@iconify-json/lucide": "^1.2"
+          },
+          "snippets": ["styles/tokens.shadcn.css"],
+          "writes": ["uno.config.ts"]
+        },
+        "tailwind-v4": {
+          "deps": { "tailwindcss": "^4.3" },
+          "devDeps": { "@tailwindcss/vite": "^4.3" },
+          "snippets": ["styles/tokens.shadcn.css"]
+        },
+        "unocss": {
+          "devDeps": {
+            "unocss": "^66.6",
+            "@unocss/reset": "^66.6",
+            "@iconify-json/lucide": "^1.2"
+          },
+          "snippets": ["styles/tokens.shadcn.css"],
+          "writes": ["uno.config.ts"]
+        },
+        "none": {
+          "snippets": ["styles/tokens.shadcn.css"]
+        }
+      }
+    },
+    "routing": {
+      "choices": {
+        "vue-router": {
+          "deps": { "vue-router": "^5.0" },
+          "writes": ["src/app/router.ts"]
+        },
+        "none": {}
+      }
+    },
+    "state": {
+      "choices": {
+        "pinia": {
+          "deps": { "pinia": "^2.2" },
+          "writes": ["src/stores/"]
+        },
+        "none": {}
+      }
+    },
+    "data": {
+      "choices": {
+        "tanstack-query": {
+          "deps": { "@tanstack/vue-query": "^5.100" },
+          "writes": ["src/app/providers/QueryProvider.vue"]
+        },
+        "fetch-only": {}
+      }
+    },
+    "forms": {
+      "choices": {
+        "vee-validate+zod": {
+          "deps": {
+            "vee-validate": "^4.13",
+            "@vee-validate/zod": "^4.13",
+            "zod": "^4.4"
+          }
+        },
+        "none": {}
+      }
+    },
+    "tests": {
+      "choices": {
+        "vitest": {
+          "devDeps": {
+            "vitest": "^4.1",
+            "@vue/test-utils": "^2.4",
+            "jsdom": "^25.0"
+          },
+          "scripts": { "test": "vitest run" },
+          "snippets": ["http/errors.test.ts"]
+        },
+        "none": {}
+      }
+    },
+    "animation": {
+      "choices": {
+        "motion-v": {
+          "deps": { "motion-v": "^1.7" }
+        },
+        "none": {}
+      }
+    }
+  },
+  "universalDeps": {
+    "deps": { "vue": "^3.5" },
+    "devDeps": {
+      "@vitejs/plugin-vue": "^4.5",
+      "typescript": "^5.8"
+    }
+  },
+  "universalSnippets": [
+    { "src": "config/tsconfig.strict.json", "dest": "tsconfig.json", "transform": "add-jsx-preserve" },
+    { "src": "config/eslint.flat.ts.js", "dest": "eslint.config.js", "transform": "add-vue-plugin" },
+    { "src": "config/env.example", "dest": ".env.example", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
+    { "src": "http/client.web.ts", "dest": "src/shared/http/client.ts", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
+    { "src": "http/errors.client.ts", "dest": "src/shared/http/errors.ts" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
+  ],
+  "universalWrites": [
+    "package.json",
+    "vite.config.ts",
+    "src/main.ts",
+    "src/App.vue",
+    "src/config/env.ts"
+  ],
+  "templatePlaceholders": {
+    "%VIEWS_DIR%": "views",
+    "%DATA_DIR%": "composables",
+    "%DATA_HOOK_PATTERN%": "use<Name>.ts (composable)",
+    "%API_BASE_VAR%": "VITE_API_BASE_URL"
+  },
+  "postInitCli": [
+    { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },
+    { "command": "%PM% dlx shadcn-vue@latest add button card input dialog label", "mode": "auto", "condition": "uiLibrary === 'shadcn-vue'", "reason": "Seed shadcn-vue primitives" }
+  ]
+}

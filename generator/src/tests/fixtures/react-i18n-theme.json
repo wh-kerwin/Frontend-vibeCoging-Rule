@@ -1,0 +1,12 @@
+{
+  "name": "react-i18n-theme",
+  "stack": "react",
+  "packageManager": "pnpm",
+  "choices": {
+    "theme": "light-dark-system",
+    "themePreset": "shadcn-neutral",
+    "i18n": "react-i18next",
+    "defaultLocale": "zh-CN",
+    "locales": ["zh-CN", "en-US"]
+  }
+}

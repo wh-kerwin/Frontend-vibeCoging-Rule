@@ -1,0 +1,191 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_machineReadableSource": true,
+  "_description": "Machine-readable options extracted from workflows/matrices/react-native.matrix.md.",
+  "stack": "react-native",
+  "versionBaseline": {
+    "react-native": "0.79.x",
+    "expo": "^53.0",
+    "react": "^19.2",
+    "typescript": "^5.8",
+    "node": "22"
+  },
+  "defaults": {
+    "runtime": "expo",
+    "uiLibrary": "native-primitives",
+    "atomicCss": "nativewind",
+    "routing": "expo-router",
+    "state": "zustand",
+    "data": "tanstack-query",
+    "forms": "react-hook-form+zod",
+    "tests": "vitest+jest-preset",
+    "animation": "react-native-reanimated",
+    "icons": "lucide-react-native",
+    "secureStorage": "expo-secure-store"
+  },
+  "dimensions": {
+    "runtime": {
+      "choices": {
+        "expo": {
+          "deps": { "expo": "^53.0", "react": "^19.2", "react-native": "0.79.x" },
+          "writes": ["app.json", "babel.config.js", "metro.config.js"]
+        },
+        "bare": {
+          "_note": "Standard React Native CLI scaffold. More manual setup."
+        }
+      }
+    },
+    "uiLibrary": {
+      "choices": {
+        "native-primitives": {
+          "_note": "No additional deps. Uses View, Text, Pressable, ScrollView from RN core."
+        },
+        "tamagui": {
+          "deps": { "tamagui": "^1.121", "@tamagui/config": "^1.121" },
+          "writes": ["tamagui.config.ts"]
+        },
+        "gluestack": {
+          "deps": { "@gluestack-ui/themed": "^1.1" }
+        }
+      }
+    },
+    "atomicCss": {
+      "choices": {
+        "nativewind": {
+          "deps": { "nativewind": "^4.1" },
+          "devDeps": { "tailwindcss": "^4.3" },
+          "writes": ["tailwind.config.js", "babel.config.js:nativewind-plugin"]
+        },
+        "none": {
+          "_note": "StyleSheet.create only."
+        }
+      }
+    },
+    "routing": {
+      "choices": {
+        "expo-router": {
+          "deps": { "expo-router": "^4.0" },
+          "writes": ["app/_layout.tsx", "app/index.tsx", "app/+not-found.tsx"]
+        },
+        "react-navigation": {
+          "deps": {
+            "@react-navigation/native": "^7.0",
+            "@react-navigation/native-stack": "^7.0",
+            "react-native-screens": "*",
+            "react-native-safe-area-context": "*"
+          },
+          "writes": ["src/app/Navigator.tsx"]
+        }
+      }
+    },
+    "state": {
+      "choices": {
+        "zustand": {
+          "deps": { "zustand": "^5.0" },
+          "writes": ["src/stores/"]
+        },
+        "jotai": {
+          "deps": { "jotai": "^2.10" }
+        },
+        "redux-toolkit": {
+          "deps": { "@reduxjs/toolkit": "^2.4", "react-redux": "^9.1" },
+          "writes": ["src/stores/store.ts"]
+        },
+        "none": {}
+      }
+    },
+    "data": {
+      "choices": {
+        "tanstack-query": {
+          "deps": { "@tanstack/react-query": "^5.100" },
+          "snippets": ["query/QueryProvider.tsx"],
+          "writes": ["src/app/providers/QueryProvider.tsx"]
+        },
+        "fetch-only": {}
+      }
+    },
+    "forms": {
+      "choices": {
+        "react-hook-form+zod": {
+          "deps": {
+            "react-hook-form": "^7.54",
+            "@hookform/resolvers": "^3.10",
+            "zod": "^4.4"
+          }
+        },
+        "none": {}
+      }
+    },
+    "tests": {
+      "choices": {
+        "vitest+jest-preset": {
+          "devDeps": {
+            "vitest": "^4.1",
+            "jest-expo": "^53.0",
+            "@testing-library/react-native": "^13.0"
+          },
+          "scripts": { "test": "vitest run" },
+          "writes": ["vitest.config.ts"]
+        },
+        "jest-only": {
+          "devDeps": { "jest": "*", "jest-expo": "^53.0" },
+          "scripts": { "test": "jest" }
+        }
+      }
+    },
+    "animation": {
+      "choices": {
+        "react-native-reanimated": {
+          "deps": { "react-native-reanimated": "^4.0" },
+          "writes": ["babel.config.js:reanimated-plugin"]
+        },
+        "none": {}
+      }
+    },
+    "secureStorage": {
+      "choices": {
+        "expo-secure-store": {
+          "deps": { "expo-secure-store": "^14.0" },
+          "condition": "runtime === 'expo'"
+        },
+        "react-native-keychain": {
+          "deps": { "react-native-keychain": "^9.2" }
+        }
+      }
+    }
+  },
+  "universalDeps": {
+    "deps": {},
+    "devDeps": { "typescript": "^5.8" }
+  },
+  "universalSnippets": [
+    { "src": "config/tsconfig.strict.json", "dest": "tsconfig.json", "transform": "remove-dom-libs-add-jsx" },
+    { "src": "config/eslint.flat.ts.js", "dest": "eslint.config.js", "transform": "add-react-hooks-plugin" },
+    { "src": "config/env.example", "dest": ".env.example", "placeholders": { "%API_BASE_VAR%": "EXPO_PUBLIC_API_BASE_URL" } },
+    { "src": "http/client.rn.ts", "dest": "src/shared/http/client.ts" },
+    { "src": "http/errors.client.ts", "dest": "src/shared/http/errors.ts" },
+    { "src": "storage/preferences.rn.ts", "dest": "src/shared/storage/preferences.ts" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
+  ],
+  "universalWrites": [
+    "package.json",
+    "app.json",
+    "babel.config.js",
+    "metro.config.js",
+    "app/_layout.tsx",
+    "src/config/env.ts",
+    "src/shared/native/.gitkeep"
+  ],
+  "templatePlaceholders": {
+    "%VIEWS_DIR%": "screens",
+    "%DATA_DIR%": "hooks",
+    "%DATA_HOOK_PATTERN%": "use<Name>.ts (hook)",
+    "%API_BASE_VAR%": "EXPO_PUBLIC_API_BASE_URL"
+  },
+  "postInitCli": [
+    { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },
+    { "command": "%PM% dlx expo install", "mode": "auto", "condition": "runtime === 'expo'", "reason": "Resolve SDK-aligned native package versions" },
+    { "command": "%PM% exec expo start", "mode": "announce", "condition": "runtime === 'expo'", "reason": "Open Expo dev client" }
+  ]
+}

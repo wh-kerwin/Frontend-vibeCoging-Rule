@@ -154,6 +154,34 @@ Optional dimensions per stack:
 
 For Claude Code: cap each `AskUserQuestion` call at 4 questions; split into two calls if a stack has more than 4 optional dimensions.
 
+### Stage 2b — Global customization (theme / i18n)
+
+After the stack-specific deep-dive, ask the following global configuration questions. These apply to all stacks and are defined in `workflows/options/global.options.json`.
+
+**Q — Theme switching strategy (`theme`)**
+
+1. `light-dark-system` (recommended) — Light / Dark / System. Supports system preference detection, manual toggle, and persistence.
+2. `light-only` — Only generates light tokens. No theme switcher.
+3. `dark-only` — Only generates dark tokens. Suited for dashboards and dev tools.
+
+**Q — Theme preset (`theme_preset`)** — only when theme ≠ custom-token-preset:
+
+1. `shadcn-neutral` (recommended) — Standard neutral palette from shadcn/ui.
+2. `voltagent` — Dark engineering command-center theme.
+
+**Q — Internationalization (`i18n`)** — choices depend on stack:
+
+1. `none` (recommended) — No i18n. Hard-coded strings only.
+2. Stack-specific library:
+   - Vue → `vue-i18n`
+   - React → `react-i18next`
+   - React Native → `expo-localization+i18next`
+   - Electron / node-fullstack → inherits from renderer/web framework choice
+
+If i18n ≠ none, ask two follow-ups:
+- **Default locale** (`default_locale`) — free text, default `zh-CN`
+- **Supported locales** (`locales`) — comma-separated, default `zh-CN, en-US`
+
 ## Stage 3 — Matrix lookup
 
 1. **Fetch** `workflows/matrices/<stack>.matrix.md` per the **Fetch strategy** above.
@@ -172,6 +200,9 @@ For Claude Code: cap each `AskUserQuestion` call at 4 questions; split into two 
    Forms:           vee-validate+zod    (default)
    Tests:           vitest              (default)
    Animation:       motion-v            (default)
+   Theme:           light-dark-system   (default)
+   Theme preset:    shadcn-neutral      (default)
+   I18n:            none                (default)
    ```
 
 5. Confirm with the user:
@@ -241,6 +272,10 @@ Substitute the following placeholders from the user's Stage 1–3 answers. **All
 | `%REPO_RAW_BASE%` | Same RAW base URL used to fetch this workflow | `https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/` |
 | `%UI_INSTALL_HINT%` | Multi-line install hint formatted as a fenced bash block; mapping table below | see table |
 | `%UI_INSTALL_HINT_INLINE%` | One-line version of the same hint (no fence) for inline reference | see table |
+| `%THEME_MODE%` | Resolved `theme` | `light-dark-system`, `light-only`, `dark-only` |
+| `%THEME_PRESET%` | Resolved `theme_preset` | `shadcn-neutral`, `voltagent` |
+| `%I18N_LIBRARY%` | Resolved `i18n` | `vue-i18n`, `react-i18next`, `none` |
+| `%DEFAULT_LOCALE%` | Resolved `default_locale` | `zh-CN`, `en-US` |
 
 **UI install hint mapping** (substitute as a single fenced ` ```bash ` block for `%UI_INSTALL_HINT%`, and as plain inline text for `%UI_INSTALL_HINT_INLINE%`):
 
@@ -329,3 +364,29 @@ These apply throughout every stage:
 The `Version baseline` in each matrix is dated. When >6 months stale, the workflow should announce this at the start of Stage 4 and link the user to the matrix file for a manual bump check before installing.
 
 Quarterly maintenance: update each matrix's `Version baseline` block, re-test by running `/new-project` for each stack into a scratch directory and running `pnpm typecheck && pnpm build`.
+
+## Generator CLI mode (alternative to AI workflow)
+
+The same configuration schema that powers this AI workflow is also available as a local CLI generator at `generator/`. Both modes produce equivalent output.
+
+### CLI usage
+
+```bash
+# Interactive mode (same questions as this workflow)
+pnpm --dir generator dev --target ../my-app
+
+# Config-file mode (skip interactive prompts)
+pnpm --dir generator scaffold --config scaffold.config.json --target ../my-app
+
+# Dry-run (print file plan without writing)
+pnpm --dir generator scaffold --stack react --target ../my-app --dry-run
+```
+
+### Equivalence
+
+- The AI workflow reads `workflows/matrices/*.matrix.md` and `shared/snippets/`.
+- The generator CLI reads `workflows/options/*.options.json` and `shared/snippets/`.
+- Both share `schemas/scaffold-config.schema.json` for input validation and `schemas/resolved-config.schema.json` for the resolved config shape.
+- Options JSON files are the machine-readable source; Markdown matrices remain the human-readable reference.
+
+When the local generator is available, the AI should prefer it for file generation (calling `scaffold --config --dry-run` to preview, then `scaffold --config --target`) and only fall back to the manual Stage 4 approach when the generator is not installed.

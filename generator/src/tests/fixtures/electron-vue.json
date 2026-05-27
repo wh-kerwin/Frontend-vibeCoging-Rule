@@ -1,0 +1,8 @@
+{
+  "name": "electron-vue",
+  "stack": "electron",
+  "packageManager": "pnpm",
+  "choices": {
+    "rendererFramework": "vue"
+  }
+}

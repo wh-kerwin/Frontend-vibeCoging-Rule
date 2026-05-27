@@ -1,0 +1,8 @@
+{
+  "name": "node-api-only",
+  "stack": "node-fullstack",
+  "packageManager": "pnpm",
+  "choices": {
+    "webFramework": "none"
+  }
+}

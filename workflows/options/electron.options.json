@@ -1,0 +1,104 @@
+{
+  "$schema": "../../schemas/scaffold-config.schema.json",
+  "_machineReadableSource": true,
+  "_description": "Machine-readable options extracted from workflows/matrices/electron.matrix.md. The renderer sub-app delegates to vue.options.json or react.options.json.",
+  "stack": "electron",
+  "versionBaseline": {
+    "electron": "^33.0",
+    "electron-vite": "^2.3",
+    "typescript": "^5.8",
+    "node": "22"
+  },
+  "defaults": {
+    "buildTool": "electron-vite",
+    "rendererFramework": null,
+    "storage": "electron-store",
+    "tests": "vitest",
+    "updates": "electron-updater"
+  },
+  "dimensions": {
+    "buildTool": {
+      "choices": {
+        "electron-vite": {
+          "devDeps": { "electron-vite": "^2.3", "electron": "^33.0", "vite": "^8.0" },
+          "writes": ["electron.vite.config.ts"]
+        },
+        "electron-forge": {
+          "devDeps": { "@electron-forge/cli": "^7.5" },
+          "writes": ["forge.config.ts"]
+        }
+      }
+    },
+    "rendererFramework": {
+      "_note": "Asks 'vue' or 'react' in Stage 1. Triggers re-entry into that framework's matrix rooted at src/renderer/.",
+      "choices": {
+        "vue": { "delegatesTo": "vue.options.json", "rootPrefix": "src/renderer/" },
+        "react": { "delegatesTo": "react.options.json", "rootPrefix": "src/renderer/" }
+      }
+    },
+    "storage": {
+      "choices": {
+        "electron-store": {
+          "deps": { "electron-store": "^10.0" },
+          "writes": ["src/main/services/preferences.ts"]
+        },
+        "none": {}
+      }
+    },
+    "tests": {
+      "choices": {
+        "vitest": {
+          "devDeps": { "vitest": "^4.1" },
+          "scripts": { "test": "vitest run" },
+          "_note": "Two configs: main-side (Node env) and renderer-side (jsdom env)."
+        },
+        "none": {}
+      }
+    },
+    "updates": {
+      "choices": {
+        "electron-updater": {
+          "deps": { "electron-updater": "^6.3" },
+          "writes": ["src/main/services/updates.ts"]
+        },
+        "none": {}
+      }
+    }
+  },
+  "universalDeps": {
+    "deps": {},
+    "devDeps": { "typescript": "^5.8" }
+  },
+  "universalSnippets": [
+    { "src": "config/tsconfig.strict.json", "dest": "tsconfig.json" },
+    { "src": "config/eslint.flat.ts.js", "dest": "eslint.config.js", "transform": "add-renderer-framework-plugin" },
+    { "src": "config/env.example", "dest": ".env.example", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
+    { "src": "electron/main.security.ts", "dest": "src/main/main.ts" },
+    { "src": "electron/preload.bridge.ts", "dest": "src/preload/index.ts" },
+    { "src": "electron/preload.api.example.ts", "dest": "src/preload/api.ts" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
+  ],
+  "universalWrites": [
+    "package.json",
+    "electron.vite.config.ts",
+    "tsconfig.main.json",
+    "tsconfig.preload.json"
+  ],
+  "templatePlaceholders": {
+    "%VIEWS_DIR%": "from-renderer",
+    "%DATA_DIR%": "from-renderer",
+    "%DATA_HOOK_PATTERN%": "from-renderer",
+    "%API_BASE_VAR%": "VITE_API_BASE_URL"
+  },
+  "rendererDelegationRules": [
+    "Generate renderer files at src/renderer/ instead of src/",
+    "Merge renderer vite.config.ts into root electron.vite.config.ts",
+    "Skip renderer's src/shared/http/client.ts unless user opts in",
+    "Skip renderer's AGENT.md and CLAUDE.md — only one set at repo root"
+  ],
+  "postInitCli": [
+    { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },
+    { "command": "%PM% exec electron-rebuild", "mode": "announce", "reason": "Rebuild native modules (only if native modules added later)" }
+  ]
+}

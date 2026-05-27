@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wh-kerwin/Frontend-vibeCoging-Rule/schemas/scaffold-config.schema.json",
+  "title": "Scaffold Config",
+  "description": "Input configuration for the frontend-rules project scaffold generator. Can be passed via --config to skip interactive prompts.",
+  "type": "object",
+  "required": ["name", "stack", "packageManager"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9@][a-z0-9._@/-]*$",
+      "description": "Project name (used in package.json)"
+    },
+    "stack": {
+      "type": "string",
+      "enum": ["vue", "react", "react-native", "electron", "node-fullstack"],
+      "description": "Primary technology stack"
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["pnpm", "npm", "yarn", "bun"],
+      "default": "pnpm",
+      "description": "Package manager"
+    },
+    "targetDir": {
+      "type": "string",
+      "description": "Absolute or relative path to the output directory. Defaults to cwd."
+    },
+    "choices": {
+      "type": "object",
+      "description": "Per-dimension tech choices. Omitted keys use the matrix default.",
+      "additionalProperties": false,
+      "properties": {
+        "buildTool": {
+          "type": "string",
+          "enum": ["vite", "next", "electron-vite", "electron-forge"],
+          "description": "Build tool (react: vite|next, electron: electron-vite|electron-forge)"
+        },
+        "uiLibrary": {
+          "type": "string",
+          "enum": [
+            "shadcn-vue", "naive-ui", "element-plus", "ant-design-vue", "headless-only",
+            "shadcn-ui", "mantine", "chakra", "radix-only",
+            "native-primitives", "tamagui", "gluestack"
+          ],
+          "description": "UI component library"
+        },
+        "atomicCss": {
+          "type": "string",
+          "enum": ["tailwind-v4+unocss", "tailwind-v4", "unocss", "nativewind", "none"],
+          "description": "Atomic CSS solution"
+        },
+        "routing": {
+          "type": "string",
+          "enum": ["vue-router", "react-router", "app-router", "expo-router", "react-navigation", "none"],
+          "description": "Routing solution"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["pinia", "zustand", "jotai", "redux-toolkit", "none"],
+          "description": "State management"
+        },
+        "data": {
+          "type": "string",
+          "enum": ["tanstack-query", "swr", "fetch-only"],
+          "description": "Data fetching layer"
+        },
+        "forms": {
+          "type": "string",
+          "enum": ["vee-validate+zod", "react-hook-form+zod", "formik", "none"],
+          "description": "Form validation library"
+        },
+        "tests": {
+          "type": "string",
+          "enum": ["vitest", "vitest+jest-preset", "jest-only", "playwright", "none"],
+          "description": "Test framework"
+        },
+        "animation": {
+          "type": "string",
+          "enum": ["motion-v", "motion", "react-native-reanimated", "none"],
+          "description": "Animation library"
+        },
+        "icons": {
+          "type": "string",
+          "enum": ["@lucide/vue", "lucide-react", "lucide-react-native"],
+          "description": "Icon library"
+        },
+        "rendererFramework": {
+          "type": "string",
+          "enum": ["vue", "react"],
+          "description": "Electron renderer framework"
+        },
+        "webFramework": {
+          "type": "string",
+          "enum": ["vue", "react", "none"],
+          "description": "Node full-stack web sub-app framework"
+        },
+        "runtime": {
+          "type": "string",
+          "enum": ["expo", "bare"],
+          "description": "React Native runtime"
+        },
+        "secureStorage": {
+          "type": "string",
+          "enum": ["expo-secure-store", "react-native-keychain"],
+          "description": "React Native secure storage"
+        },
+        "apiFramework": {
+          "type": "string",
+          "enum": ["hono", "fastify", "nestjs"],
+          "description": "Node full-stack API framework"
+        },
+        "orm": {
+          "type": "string",
+          "enum": ["drizzle", "prisma", "kysely"],
+          "description": "Node full-stack ORM"
+        },
+        "database": {
+          "type": "string",
+          "enum": ["postgres", "mysql", "sqlite"],
+          "description": "Node full-stack database"
+        },
+        "storage": {
+          "type": "string",
+          "enum": ["electron-store", "none"],
+          "description": "Electron local storage"
+        },
+        "updates": {
+          "type": "string",
+          "enum": ["electron-updater", "none"],
+          "description": "Electron auto-update strategy"
+        },
+        "contractsPackage": {
+          "type": "string",
+          "enum": ["yes", "no"],
+          "description": "Node full-stack shared contracts package"
+        },
+        "theme": {
+          "type": "string",
+          "enum": ["light-dark-system", "light-only", "dark-only", "custom-token-preset"],
+          "default": "light-dark-system",
+          "description": "Theme switching strategy"
+        },
+        "themePreset": {
+          "type": "string",
+          "default": "shadcn-neutral",
+          "description": "Design token preset name"
+        },
+        "i18n": {
+          "type": "string",
+          "enum": ["none", "vue-i18n", "react-i18next", "expo-localization+i18next"],
+          "default": "none",
+          "description": "Internationalization library"
+        },
+        "defaultLocale": {
+          "type": "string",
+          "default": "zh-CN",
+          "description": "Default locale when i18n is enabled"
+        },
+        "locales": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["zh-CN", "en-US"],
+          "description": "Locales to generate language packs for"
+        }
+      }
+    }
+  }
+}
