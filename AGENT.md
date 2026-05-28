@@ -37,10 +37,10 @@ When modifying a project:
 
 When creating a new project:
 
-- Run `/new-project` (Claude Code slash command) — it executes `workflows/new-project.md` interactively.
-- For other AI tools, read `workflows/new-project.md` directly and follow it stage by stage.
+- **Claude Code users**: install the `skills/new-project/` skill (`claude skills install ...`), then run `/new-project` in any empty directory. The skill fetches the canonical workflow from this repo at runtime.
+- **Other AI tools**: read `workflows/new-project.md` directly (fetch from the canonical GitHub repo) and follow it stage by stage.
 - The workflow asks for project type, UI library, atomic CSS, and package manager, then generates a complete project assembled from `boundaries/<stack>/ARCHITECTURE.md`, `workflows/matrices/<stack>.matrix.md`, and `shared/snippets/**`.
-- Do not pre-write static templates. The workflow is the single entry point.
+- Do not pre-write static templates. The workflow (via skill or direct fetch) is the single entry point.
 
 ## Naming
 

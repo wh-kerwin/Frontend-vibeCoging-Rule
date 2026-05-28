@@ -22,12 +22,38 @@
 - `boundaries/<stack>/ARCHITECTURE.md` — 各技术栈的架构约束。
 - `shared/snippets/` — 可被工作流引用的代码片段(HTTP client、AppError、cn、tokens、theme、i18n 等)。
 - `generator/` — TypeScript CLI 脚手架生成器,与 AI workflow 等价。
+- `skills/new-project/` — Claude Code skill,一条命令安装,无需手动配置。
 
-## 让你的 AI 工具找到这个仓库
+## 安装 Skill(推荐,Claude Code 用户)
 
-工作流不要求你把本仓库克隆到新项目目录 — AI 会**直接从 GitHub fetch** boundaries / snippets / matrices。但你得先告诉 AI 仓库在哪。配置一次,任意目录都能跑。
+将 `/new-project` 工作流安装为 Claude Code skill,一条命令即可在任意目录使用。
+
+### Skill 目录结构
+
+本仓库根目录下的 `skills/new-project/` 是一个标准的 Claude Code skill:
+
+- `SKILL.md` — skill 入口,获取并执行完整工作流
+- `REFERENCE.md` — 精简参考,离线回退时使用
+
+### 从 GitHub 安装(推荐)
+
+```bash
+# 指向仓库中的 skills/new-project 目录
+claude skills install wh-kerwin/Frontend-vibeCoging-Rule/skills/new-project
+```
+
+### 从本地克隆安装
+
+```bash
+git clone https://github.com/wh-kerwin/Frontend-vibeCoging-Rule.git
+claude skills install ./Frontend-vibeCoging-Rule/skills/new-project
+```
+
+安装后在**任意空目录**里说 `/new-project` 或 "创建新项目" 即可。
 
 ### 仓库源(canonical source)
+
+skill 会从以下源按需拉取 rules / matrices / snippets:
 
 ```
 GitHub:    https://github.com/wh-kerwin/Frontend-vibeCoging-Rule
@@ -38,9 +64,10 @@ API base:  https://api.github.com/repos/wh-kerwin/Frontend-vibeCoging-Rule/conte
 
 > 国内访问 `raw.githubusercontent.com` 不稳定时,工作流会自动降级到 `api.github.com/repos/.../contents/` API(返回 base64,AI 自动解码)。
 
-### Claude Code 用户(一次性配置)
+<details>
+<summary>Legacy: Slash command 方式(旧版安装)</summary>
 
-1. 把本仓库的 [.claude/commands/new-project.md](.claude/commands/new-project.md) 复制到 `~/.claude/commands/new-project.md`(变成 user-level slash command)。
+1. 把 `.claude/commands/new-project.md` 复制到 `~/.claude/commands/new-project.md`:
    ```bash
    mkdir -p ~/.claude/commands
    curl -fsSL https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/.claude/commands/new-project.md \
@@ -51,11 +78,12 @@ API base:  https://api.github.com/repos/wh-kerwin/Frontend-vibeCoging-Rule/conte
    gh api repos/wh-kerwin/Frontend-vibeCoging-Rule/contents/.claude/commands/new-project.md \
      --jq '.content' | base64 -d > ~/.claude/commands/new-project.md
    ```
-2. 在 `~/.claude/CLAUDE.md` 末尾追加一行 user-level memory(可选,只在你想用 fork 时需要):
+2. (可选)在 `~/.claude/CLAUDE.md` 追加:
    ```
    frontend-rules 仓库源:wh-kerwin/Frontend-vibeCoging-Rule(branch: main)。fetch boundaries/snippets/matrices 时用这个。
    ```
-3. 之后在**任意空目录**里跑 `/new-project` 即可。
+
+</details>
 
 ### Codex / Cursor / Cline 等其他 AI 工具
 
