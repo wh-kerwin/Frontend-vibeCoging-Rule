@@ -7,37 +7,62 @@ description: Interactive workflow to scaffold a new frontend project. Asks for p
 
 This skill generates a complete, runnable frontend project. Every stage is defined inline below — do NOT skip stages, reorder them, or invent your own questions. Execute from top to bottom.
 
-## Repo Source
+## Repo Source (reference only — not used for fetching)
 
 ```
 GitHub:    wh-kerwin/Frontend-vibeCoging-Rule (branch: main)
 RAW base:  https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/
-API base:  https://api.github.com/repos/wh-kerwin/Frontend-vibeCoging-Rule/contents/
 ```
 
-If `FRONTEND_RULES_ROOT` env var is set, read from that local clone instead of the skill's `data/` directory (dev mode for editing rules).
+These URLs are used ONLY as values for the `%REPO_RAW_BASE%` placeholder in generated project files. This skill does NOT fetch anything from the network — all data is bundled locally in `data/`.
 
-## Fetch Strategy
+## Data Directory & Fetch Strategy
 
-This skill ships with all boundaries, matrices, and snippets inside `data/`. Read from there first — no network needed.
+This skill ships with ALL boundaries, matrices, and snippets inside a `data/` directory. **No network access is needed or allowed.** Every file reference in this skill resolves to a local path under `data/`.
 
-For every reference to `boundaries/<path>`, `workflows/matrices/<file>`, or `shared/snippets/<path>`:
+### Locating the data directory
 
-1. **Skill local** — read `data/boundaries/<path>`, `data/matrices/<file>`, or `data/snippets/<path>` from this skill directory.
-2. **FRONTEND_RULES_ROOT** — if env var is set, read `<FRONTEND_RULES_ROOT>/<path>` (dev mode).
-3. **GitHub RAW** — `GET <RAW_BASE>/<path>` via WebFetch (fallback).
-4. **GitHub API** — `GET <API_BASE>/<path>`, base64-decode `content` field (fallback when RAW blocked).
+The AI must resolve the `data/` directory ONCE at the start of Stage 0, BEFORE reading any files. Use the first path that exists:
+
+1. **`SKILL_DATA_DIR` env var** — if set, use it directly. Example: `SKILL_DATA_DIR=/home/user/.codex/skills/new-project/data`
+2. **`FRONTEND_RULES_ROOT` env var** — if set, use `<FRONTEND_RULES_ROOT>/skills/new-project/data/`
+3. **Relative to this instruction file** — if you know the filesystem path of this SKILL.md file, use `<that directory>/data/`
+4. **Known tool-specific install locations** — try each in order, stop at the first that exists:
+   - `~/.claude/skills/new-project/data/`
+   - `~/.codex/skills/new-project/data/`
+   - `.cursor/rules/new-project/data/`
+   - `./skills/new-project/data/`
+
+Assign the resolved path to a variable called `DATA_DIR` in your working memory. All subsequent file reads use `<DATA_DIR>/` as the root.
+
+### Verification
+
+After resolving `DATA_DIR`, immediately read `<DATA_DIR>/boundaries/common/coding-style.md`. If this file does not exist or is empty, STOP and report:
+
+> **Cannot locate skill data directory.** Set the `SKILL_DATA_DIR` environment variable to the absolute path of the `data/` directory that ships with this skill, then re-run `/new-project`.
+> Example: `export SKILL_DATA_DIR=/path/to/skills/new-project/data`
+
+Do NOT fall back to GitHub, do NOT make up file contents, do NOT skip files. Every file referenced in this skill MUST be read from `DATA_DIR`.
+
+### Path mapping
+
+For every reference in this skill:
+- `data/boundaries/<path>` → read `<DATA_DIR>/boundaries/<path>`
+- `data/matrices/<file>` → read `<DATA_DIR>/matrices/<file>`
+- `data/snippets/<path>` → read `<DATA_DIR>/snippets/<path>`
 
 ---
 
 ## Stage 0 — Preflight
 
-1. **Check cwd is empty.** Run `ls -A`. Abort if anything present other than `.git/`:
+1. **Resolve DATA_DIR.** Follow the "Locating the data directory" algorithm above. Run the verification check (read `<DATA_DIR>/boundaries/common/coding-style.md`). If it fails, STOP immediately — do not proceed.
+
+2. **Check cwd is empty.** Run `ls -A`. Abort if anything present other than `.git/`:
    > Working directory is not empty. Please `cd` into an empty directory and re-run `/new-project`.
 
-2. **Load common rules.** Read ALL six files from `data/boundaries/common/` in this skill directory: `coding-style.md`, `design-system.md`, `http-contract.md`, `directory-rules.md`, `async-states.md`, `encapsulation.md`. Cache in conversation memory.
+3. **Load common rules.** Read ALL six files from `<DATA_DIR>/boundaries/common/`: `coding-style.md`, `design-system.md`, `http-contract.md`, `directory-rules.md`, `async-states.md`, `encapsulation.md`. Cache in conversation memory. If any file is missing, STOP and report which file could not be read.
 
-3. Announce: "Workspace is empty. Loaded common engineering boundaries from `wh-kerwin/Frontend-vibeCoging-Rule@main`. Starting interactive setup."
+4. Announce: "Workspace is empty. Data directory resolved to `<DATA_DIR>`. Loaded 6 common engineering boundaries. Starting interactive setup."
 
 ---
 
@@ -151,7 +176,7 @@ Ask: "Customize beyond defaults?"
 - **electron**: `build_tool`, `storage`, `tests`, `updates`
 - **node-fullstack**: `api_framework`, `orm`, `database`, `tests`, `contracts_package`
 
-Ask one dimension at a time. Read actual option labels from `data/matrices/<stack>.matrix.md` in this skill directory. If the file is missing, ask as free text with the choice name as hint.
+Ask one dimension at a time. Read actual option labels from `<DATA_DIR>/matrices/<stack>.matrix.md`. If the file is missing, STOP and report the error — do not fall back to free text.
 
 ### Global customization (all stacks)
 
@@ -176,7 +201,7 @@ If i18n ≠ none, ask:
 
 ## Stage 3 — Matrix Lookup
 
-1. **Read** `data/matrices/<stack>.matrix.md` from this skill directory.
+1. **Read** `<DATA_DIR>/matrices/<stack>.matrix.md`.
 2. Start from the matrix's `Defaults` table. Override with Stage 1 / Stage 2 user answers.
 3. Output a resolved summary table BEFORE writing any files:
 
@@ -218,7 +243,7 @@ Build the file list from the matrix's `Universal writes` table plus any `writes`
 
 1. **`package.json`** — assemble from union of `deps` and `dev_deps` across all chosen choices, plus matrix-required scripts. Use caret ranges from the matrix's `Version baseline`.
 
-2. **Config files**: `tsconfig.json` (read `data/snippets/config/tsconfig.strict.json`, add framework-specific fields), `vite.config.ts` / `next.config.ts` / `electron.vite.config.ts` / `metro.config.js`, `eslint.config.js` (read `data/snippets/config/eslint.flat.ts.js`, add framework plugin), `.env.example` (read `data/snippets/config/env.example`, substitute `%API_BASE_VAR%`).
+2. **Config files**: `tsconfig.json` (read `<DATA_DIR>/snippets/config/tsconfig.strict.json`, add framework-specific fields), `vite.config.ts` / `next.config.ts` / `electron.vite.config.ts` / `metro.config.js`, `eslint.config.js` (read `<DATA_DIR>/snippets/config/eslint.flat.ts.js`, add framework plugin), `.env.example` (read `<DATA_DIR>/snippets/config/env.example`, substitute `%API_BASE_VAR%`).
 
 3. **`components.json`** (shadcn-vue / shadcn-ui) — write the verbatim JSON block from the matrix. **Do NOT run `shadcn init` / `shadcn-vue init`.**
 
@@ -228,37 +253,78 @@ Build the file list from the matrix's `Universal writes` table plus any `writes`
 
 For every `snippets:` entry in the matrix AND every snippet source in `Universal writes`:
 
-1. **Read** from `data/snippets/<path>` in this skill directory
-2. **Substitute placeholders** (see table below)
+1. **Read** from `<DATA_DIR>/snippets/<path>`
+2. **Substitute placeholders** (see table below — ONLY these placeholders appear in snippet files)
 3. **Write** to project location
 
-**Placeholder table:**
+**Snippet placeholder table (4B only):**
 
 | Placeholder | Replacement |
 |---|---|
 | `%API_BASE_VAR%` | `VITE_API_BASE_URL` (Vite), `NEXT_PUBLIC_API_BASE_URL` (Next), `EXPO_PUBLIC_API_BASE_URL` (Expo), `PORT` (node API) |
 | `%PACKAGE_NAME%` | Project name from `package.json` |
-| `%STACK%` | Stage 1 stack answer |
-| `%UI_LIBRARY%` | UI library + description (e.g. `shadcn-vue (Reka UI primitives)`) |
-| `%ATOMIC_CSS%` | Atomic CSS choice |
-| `%ROUTING%` | Resolved routing |
-| `%STATE_LIB%` | Resolved state library |
-| `%DATA_LIB%` | Resolved data fetching |
-| `%FORMS_LIB%` | Resolved forms |
-| `%TESTS_LIB%` | Resolved tests |
-| `%ANIMATION_LIB%` | Resolved animation |
-| `%ICONS_LIB%` | Resolved icons |
-| `%PACKAGE_MANAGER%` | pnpm / npm / yarn / bun |
-| `%THEME_MODE%` | light-dark-system / light-only / dark-only |
-| `%THEME_PRESET%` | shadcn-neutral / voltagent |
-| `%I18N_LIBRARY%` | vue-i18n / react-i18next / none |
-| `%DEFAULT_LOCALE%` | Resolved default locale |
-| `%DATA_DIR%` | `composables/` (vue) or `hooks/` (react / react-native) |
-| `%DATA_HOOK_PATTERN%` | `use<Name>.ts (composable)` or `use<Name>.ts (hook)` |
-| `%VIEWS_DIR%` | `views/` (vue) / `routes/` (react) / `screens/` (react-native) / `pages/` (next) |
-| `%REPO_RAW_BASE%` | The RAW base URL from top of this file |
-| `%UI_INSTALL_HINT%` | Fenced bash block from UI install mapping below |
-| `%UI_INSTALL_HINT_INLINE%` | One-line version of the same hint |
+| `%FEATURE_NAME%` | Feature name in lowercase (node-fullstack contracts only) |
+| `%FeatureName%` | Feature name in PascalCase (node-fullstack contracts only) |
+| `%DEFAULT_LOCALE%` | Resolved default locale (i18n snippet files only) |
+
+These are the ONLY placeholders that appear in snippet source files. Do NOT substitute `%STACK%`, `%UI_LIBRARY%`, or other template-level placeholders during this stage — they do not appear in snippet files and substituting them here is a no-op that risks corrupting file content.
+
+### Universal writes (every project)
+
+The following files are written for EVERY project regardless of stack choices. Read snippets from `<DATA_DIR>/snippets/`, substitute placeholders from the 4B table above:
+
+| Project path | Source snippet | Notes |
+|---|---|---|
+| `package.json` | Assembled from resolved deps/dev_deps/scripts | Not a snippet — built from matrix choices |
+| `tsconfig.json` | `<DATA_DIR>/snippets/config/tsconfig.strict.json` | Add framework-specific fields (jsx, paths, etc.) |
+| `eslint.config.js` | `<DATA_DIR>/snippets/config/eslint.flat.ts.js` | Add framework plugin block |
+| `.env.example` | `<DATA_DIR>/snippets/config/env.example` | Substitute `%API_BASE_VAR%` |
+| `src/shared/http/client.ts` | `<DATA_DIR>/snippets/http/client.web.ts` (or `client.rn.ts` for RN) | Substitute `%API_BASE_VAR%` |
+| `src/shared/http/errors.ts` | `<DATA_DIR>/snippets/http/errors.client.ts` (or `errors.server.ts` for node) | |
+| `src/shared/lib/cn.ts` | `<DATA_DIR>/snippets/lib/cn.ts` | Only when Tailwind selected |
+| `src/shared/styles/tokens.css` | `<DATA_DIR>/snippets/styles/tokens.shadcn.css` (or `tokens.voltagent.css`) | Based on `theme_preset` |
+| `src/config/env.ts` | Inline — typed wrapper around env vars | Write directly, not a snippet |
+| `src/main.ts` (or `src/main.tsx`, `src/index.ts`) | Inline — bootstrap + plugins | Based on stack |
+| `src/App.vue` (or `src/App.tsx`) | Inline — minimal shell | `<RouterView />` if router, else placeholder |
+
+This is the **minimum** file set. The matrix's `Choices` blocks add more files (router config, query provider, theme provider, i18n, tests, etc.). Do NOT skip any `writes:` entry in the matrix.
+
+### 4C — Project-level AGENT.md and CLAUDE.md
+
+Read the templates from `<DATA_DIR>/snippets/project-docs/`:
+- `AGENT.md.tmpl` → write to `AGENT.md` in the project root
+- `CLAUDE.md.tmpl` → write to `CLAUDE.md` in the project root
+
+These files encode the per-project stack choices so that future AI sessions and human contributors share the same contract. They also encode the hard rule: **use the chosen UI library, never hand-roll components**.
+
+Substitute ALL of the following placeholders from the resolved Stage 1-3 config. **Do NOT leave any `%TOKEN%` unreplaced.**
+
+**Template placeholder table (4C):**
+
+| Placeholder | Replacement | Example |
+|---|---|---|
+| `%PACKAGE_NAME%` | Project name (folder name or user-provided) | `my-app` |
+| `%STACK%` | Stage 1 stack answer | `vue`, `react`, `react-native`, `electron`, `node-fullstack` |
+| `%UI_LIBRARY%` | UI library + description | `shadcn-vue (Reka UI primitives)` |
+| `%ATOMIC_CSS%` | Atomic CSS choice | `tailwind-v4+unocss`, `nativewind`, `none` |
+| `%ROUTING%` | Resolved routing | `vue-router`, `react-router`, `expo-router` |
+| `%STATE_LIB%` | Resolved state library | `pinia`, `zustand` |
+| `%DATA_LIB%` | Resolved data fetching | `@tanstack/vue-query`, `@tanstack/react-query` |
+| `%FORMS_LIB%` | Resolved forms | `vee-validate + zod`, `react-hook-form + zod` |
+| `%TESTS_LIB%` | Resolved tests | `vitest`, `vitest + jest-expo` |
+| `%ANIMATION_LIB%` | Resolved animation | `motion-v`, `motion` |
+| `%ICONS_LIB%` | Resolved icons | `lucide-vue-next`, `lucide-react` |
+| `%PACKAGE_MANAGER%` | Package manager | `pnpm`, `npm`, `yarn`, `bun` |
+| `%THEME_MODE%` | Theme switching strategy | `light-dark-system`, `light-only`, `dark-only` |
+| `%THEME_PRESET%` | Theme preset | `shadcn-neutral`, `voltagent` |
+| `%I18N_LIBRARY%` | I18n library | `vue-i18n`, `react-i18next`, `none` |
+| `%DEFAULT_LOCALE%` | Default locale | `zh-CN`, `en-US` |
+| `%DATA_DIR%` | Data hooks directory | `composables` (vue) or `hooks` (react/RN) |
+| `%DATA_HOOK_PATTERN%` | Hook naming pattern | `use<Name>.ts (composable)` or `use<Name>.ts (hook)` |
+| `%VIEWS_DIR%` | Views directory | `views` (vue), `routes` (react), `screens` (RN), `pages` (next) |
+| `%REPO_RAW_BASE%` | The RAW base URL from "Repo Source" section | `https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/` |
+| `%UI_INSTALL_HINT%` | Fenced bash block from UI install mapping below | see mapping table |
+| `%UI_INSTALL_HINT_INLINE%` | One-line version of the same hint | see mapping table |
 
 **UI install hint mapping:**
 
@@ -278,34 +344,6 @@ For every `snippets:` entry in the matrix AND every snippet source in `Universal
 | gluestack | `import { Button, Card } from '@gluestack-ui/themed'` (already installed) |
 
 Pre-substitute `%PACKAGE_MANAGER%` inside `%UI_INSTALL_HINT%` before writing — project files must show literal `pnpm`/`npm`/`yarn`/`bun`, not the placeholder.
-
-### Universal writes (every project)
-
-The following files are written for EVERY project regardless of stack choices. Read snippets from `data/snippets/` per Fetch Strategy, substitute placeholders from the resolved config:
-
-| Project path | Source snippet | Notes |
-|---|---|---|
-| `package.json` | Assembled from resolved deps/dev_deps/scripts | Not a snippet — built from matrix choices |
-| `tsconfig.json` | `data/snippets/config/tsconfig.strict.json` | Add framework-specific fields (jsx, paths, etc.) |
-| `eslint.config.js` | `data/snippets/config/eslint.flat.ts.js` | Add framework plugin block |
-| `.env.example` | `data/snippets/config/env.example` | Substitute `%API_BASE_VAR%` |
-| `src/shared/http/client.ts` | `data/snippets/http/client.web.ts` (or `client.rn.ts` for RN) | Substitute `%API_BASE_VAR%` |
-| `src/shared/http/errors.ts` | `data/snippets/http/errors.client.ts` (or `errors.server.ts` for node) | |
-| `src/shared/lib/cn.ts` | `data/snippets/lib/cn.ts` | Only when Tailwind selected |
-| `src/shared/styles/tokens.css` | `data/snippets/styles/tokens.shadcn.css` (or `tokens.voltagent.css`) | Based on `theme_preset` |
-| `src/config/env.ts` | Inline — typed wrapper around env vars | Write directly, not a snippet |
-| `src/main.ts` (or `src/main.tsx`, `src/index.ts`) | Inline — bootstrap + plugins | Based on stack |
-| `src/App.vue` (or `src/App.tsx`) | Inline — minimal shell | `<RouterView />` if router, else placeholder |
-
-This is the **minimum** file set. The matrix's `Choices` blocks add more files (router config, query provider, theme provider, i18n, tests, etc.). Do NOT skip any `writes:` entry in the matrix.
-
-### 4C — Project-level AGENT.md and CLAUDE.md
-
-Read the templates from `data/snippets/project-docs/`:
-- `AGENT.md.tmpl` → write to `AGENT.md`
-- `CLAUDE.md.tmpl` → write to `CLAUDE.md`
-
-Substitute ALL placeholders from the resolved config. These files encode the per-project stack choices and the hard rule: **use the chosen UI library, never hand-roll components**. Do NOT leave any `%TOKEN%` unreplaced.
 
 ### 4D — CLIs
 
@@ -352,8 +390,9 @@ Next steps:
   3. Recommended checks before committing: <pm> typecheck && <pm> lint && <pm> test
   4. Read AGENT.md and CLAUDE.md in this project — they encode the per-project rules
      (including: use the chosen UI library, never hand-roll components).
-  5. For deeper boundaries, read `data/boundaries/common/` and `data/boundaries/<stack>/`
-     from this skill directory when needed.
+  5. For deeper boundaries, fetch from the canonical repo:
+     `https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/boundaries/`
+     Or read locally from `<DATA_DIR>/boundaries/` if the skill data directory is available.
 
 Open questions for you:
   - Auth strategy (none selected)
@@ -368,7 +407,7 @@ Open questions for you:
 
 2. **No silent decisions on tech selection.** If ambiguous, ask. Defaults are explicit and surfaced in Stage 3's summary.
 
-3. **Snippets are verbatim.** Fetch via strategy above, copy bytes, only substitute documented placeholders. Do not re-author snippet content.
+3. **Snippets are verbatim.** Read from `<DATA_DIR>/snippets/`, copy bytes, only substitute the documented placeholders from the applicable stage (4B for snippets, 4C for templates). Do not re-author snippet content. Do not fabricate content if a file cannot be read — STOP and report the error.
 
 4. **`shadcn init` is never run.** `components.json` is hand-written.
 
@@ -382,20 +421,37 @@ Open questions for you:
 
 | Stack | Matrix | Architecture |
 |---|---|---|
-| Vue | `workflows/matrices/vue.matrix.md` | `boundaries/vue/ARCHITECTURE.md` |
-| React | `workflows/matrices/react.matrix.md` | `boundaries/react/ARCHITECTURE.md` |
-| React Native | `workflows/matrices/react-native.matrix.md` | `boundaries/react-native/ARCHITECTURE.md` |
-| Electron | `workflows/matrices/electron.matrix.md` | `boundaries/electron/ARCHITECTURE.md` |
-| Node full-stack | `workflows/matrices/node-fullstack.matrix.md` | `boundaries/node-fullstack/ARCHITECTURE.md` |
+| Vue | `<DATA_DIR>/matrices/vue.matrix.md` | `<DATA_DIR>/boundaries/vue/ARCHITECTURE.md` |
+| React | `<DATA_DIR>/matrices/react.matrix.md` | `<DATA_DIR>/boundaries/react/ARCHITECTURE.md` |
+| React Native | `<DATA_DIR>/matrices/react-native.matrix.md` | `<DATA_DIR>/boundaries/react-native/ARCHITECTURE.md` |
+| Electron | `<DATA_DIR>/matrices/electron.matrix.md` | `<DATA_DIR>/boundaries/electron/ARCHITECTURE.md` |
+| Node full-stack | `<DATA_DIR>/matrices/node-fullstack.matrix.md` | `<DATA_DIR>/boundaries/node-fullstack/ARCHITECTURE.md` |
 
 ## For non-Claude-Code tools
 
-This file is self-contained — copy it into any AI tool's config location:
+This file plus its `data/` directory must be installed together. Copy both to your tool's config location:
 
-- **Codex**: append to `~/.codex/AGENTS.md`
-- **Cursor**: save as `.cursor/rules/new-project.mdc`
-- **Cline**: append to `~/.cline/rules.md` or `.clinerules`
-- **Windsurf**: save as `.windsurfrules`
-- **Any other tool**: copy into "custom instructions" / "system prompt" / "rules" / "memory"
+### Installation
 
-Then start a session in any empty directory and say `/new-project`.
+- **Codex CLI**:
+  1. Copy `skills/new-project/` (this file + `data/`) to `~/.codex/skills/new-project/`
+  2. Add to `~/.codex/AGENTS.md`: `Read and follow the instructions in ~/.codex/skills/new-project/SKILL.md when the user says /new-project`
+  3. Alternatively, set `SKILL_DATA_DIR`: `export SKILL_DATA_DIR=~/.codex/skills/new-project/data`
+
+- **Cursor**:
+  1. Copy `skills/new-project/` to `.cursor/rules/new-project/`
+  2. Rename `SKILL.md` to `new-project.mdc` or reference it from `.cursor/rules/`
+  3. Set env var: `SKILL_DATA_DIR=.cursor/rules/new-project/data`
+
+- **Cline**:
+  1. Copy `skills/new-project/` to the project or user config location
+  2. Set `SKILL_DATA_DIR` to the absolute path of the `data/` directory
+
+- **Any other tool**:
+  1. Copy `skills/new-project/` to a stable location
+  2. Set `SKILL_DATA_DIR` to the absolute path of the `data/` directory
+  3. Copy the content of this file into "custom instructions" / "system prompt" / "rules" / "memory"
+
+### Verification
+
+After installation, start a session in any empty directory and say `/new-project`. Stage 0 will verify the data directory is accessible. If it reports "Cannot locate skill data directory", set the `SKILL_DATA_DIR` env var as described above.

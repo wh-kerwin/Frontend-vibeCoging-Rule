@@ -238,6 +238,7 @@ For each `snippets:` entry in the matrix (and the `Universal writes` table's sni
 | `%FEATURE_NAME%` | Only used when generating a feature exemplar — substitute the feature name in lowercase. |
 | `%FeatureName%` | Same, PascalCase. |
 | `%PACKAGE_NAME%` | The project name from `package.json`. |
+| `%DEFAULT_LOCALE%` | Resolved default locale (i18n snippet files only). |
 
 If `boundaries/common/design-system.md` shows the user picked a non-default token preset (e.g. VoltAgent for dev tools), write `tokens.voltagent.css` instead of `tokens.shadcn.css`. Default is `tokens.shadcn.css`.
 

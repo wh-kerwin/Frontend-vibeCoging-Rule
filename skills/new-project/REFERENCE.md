@@ -2,31 +2,36 @@
 
 Condensed reference for offline use and contributor onboarding. The canonical source is `workflows/new-project.md` in the frontend-rules repo.
 
-## Repo Source
+## Repo Source (reference only)
 
 ```
 GitHub:    wh-kerwin/Frontend-vibeCoging-Rule (branch: main)
 RAW base:  https://raw.githubusercontent.com/wh-kerwin/Frontend-vibeCoging-Rule/main/
-API base:  https://api.github.com/repos/wh-kerwin/Frontend-vibeCoging-Rule/contents/
 ```
 
-Local override: set `FRONTEND_RULES_ROOT` env var to a local clone path.
+These URLs are used ONLY for `%REPO_RAW_BASE%` placeholder substitution. This skill does NOT fetch from the network.
 
-## Fetch Strategy
+## Data Directory & Fetch Strategy
 
-For every file reference (`shared/snippets/<path>`, `workflows/matrices/<file>`, `boundaries/<path>`):
+All files are bundled in `data/`. **No network access needed.**
 
-1. **Local first** — if `FRONTEND_RULES_ROOT/<path>` exists, read it
-2. **RAW URL** — `GET <RAW_BASE>/<path>`
-3. **API fallback** — `GET <API_BASE>/<path>`, base64-decode `content` field
+### Locating DATA_DIR (resolve ONCE at Stage 0 start)
 
-Cache fetched content in conversation memory. Never re-fetch the same path.
+1. `SKILL_DATA_DIR` env var → use directly
+2. `FRONTEND_RULES_ROOT` env var → `<root>/skills/new-project/data/`
+3. Relative to SKILL.md → `<skill dir>/data/`
+4. Tool-specific paths: `~/.claude/skills/new-project/data/`, `~/.codex/skills/new-project/data/`, `.cursor/rules/new-project/data/`, `./skills/new-project/data/`
+
+**Verify**: read `<DATA_DIR>/boundaries/common/coding-style.md`. If missing → STOP.
+
+All paths: `<DATA_DIR>/boundaries/`, `<DATA_DIR>/matrices/`, `<DATA_DIR>/snippets/`.
 
 ## Stage 0 — Preflight
 
-1. Check cwd is empty (`ls -A`). Abort if not.
-2. Fetch all `boundaries/common/` files (coding-style, design-system, http-contract, directory-rules, async-states, encapsulation).
-3. Announce readiness.
+1. Resolve DATA_DIR (see above). Verify it exists. STOP if not found.
+2. Check cwd is empty (`ls -A`). Abort if not.
+3. Read all 6 files from `<DATA_DIR>/boundaries/common/`. STOP if any missing.
+4. Announce readiness with resolved DATA_DIR path.
 
 ## Stage 1 — Mandatory Questions
 
@@ -86,7 +91,7 @@ If customize, ask per-stack optional dimensions (from matrix):
 
 ## Stage 3 — Matrix Lookup
 
-1. Fetch `workflows/matrices/<stack>.matrix.md`
+1. Fetch `<DATA_DIR>/matrices/<stack>.matrix.md`
 2. Start from `Defaults` table, override with user answers
 3. Output resolved summary table
 4. Confirm: "Generate this project? yes / change"
@@ -106,18 +111,21 @@ Write `package.json`, config files (`tsconfig.json`, `vite.config.ts`, etc.), `c
 
 ### 4B — Snippets
 
-Fetch snippets from `shared/snippets/` and substitute placeholders:
+Read snippets from `<DATA_DIR>/snippets/` and substitute **only these** placeholders:
 
 | Placeholder | Replacement |
 |---|---|
 | `%API_BASE_VAR%` | Stack-specific env var (VITE_API_BASE_URL, NEXT_PUBLIC_API_BASE_URL, etc.) |
-| `%FEATURE_NAME%` | Feature name in lowercase |
-| `%FeatureName%` | Feature name in PascalCase |
 | `%PACKAGE_NAME%` | Project name from package.json |
+| `%FEATURE_NAME%` | Feature name in lowercase (node-fullstack only) |
+| `%FeatureName%` | Feature name in PascalCase (node-fullstack only) |
+| `%DEFAULT_LOCALE%` | Resolved default locale (i18n snippets only) |
+
+Do NOT substitute `%STACK%`, `%UI_LIBRARY%`, or other template-level placeholders in snippet files.
 
 ### 4C — AGENT.md and CLAUDE.md
 
-Fetch `shared/snippets/project-docs/AGENT.md.tmpl` and `CLAUDE.md.tmpl`, substitute all `%PLACEHOLDER%` tokens from the resolved config, write to project root.
+Read `<DATA_DIR>/snippets/project-docs/AGENT.md.tmpl` and `CLAUDE.md.tmpl`, substitute ALL `%PLACEHOLDER%` tokens from the resolved config, write to project root.
 
 Key placeholders: `%STACK%`, `%UI_LIBRARY%`, `%ATOMIC_CSS%`, `%ROUTING%`, `%STATE_LIB%`, `%DATA_LIB%`, `%FORMS_LIB%`, `%TESTS_LIB%`, `%ANIMATION_LIB%`, `%ICONS_LIB%`, `%PACKAGE_MANAGER%`, `%THEME_MODE%`, `%THEME_PRESET%`, `%I18N_LIBRARY%`, `%DEFAULT_LOCALE%`, `%DATA_DIR%`, `%VIEWS_DIR%`, `%UI_INSTALL_HINT%`, `%UI_INSTALL_HINT_INLINE%`, `%REPO_RAW_BASE%`.
 
@@ -135,9 +143,9 @@ Print file list, CLI results, next steps (fill .env.local, run dev, typecheck/li
 
 1. **Question UX is tool-dependent**: native-UI tools batch up to 4 `AskUserQuestion` calls; text-only tools ask one at a time with numbered options.
 2. **No silent tech decisions**: ambiguous choices → ask. Defaults are explicit.
-3. **Snippets are verbatim**: fetch and copy; only substitute documented placeholders.
+3. **Snippets are verbatim**: read from `<DATA_DIR>/snippets/`, copy; only substitute 4B placeholders for snippets, 4C placeholders for templates.
 4. **`shadcn init` never run**: `components.json` is hand-written.
-5. **Stop on error**: any write/fetch/CLI failure → stop and report partial state.
+5. **Stop on error**: any write/read/CLI failure → stop and report partial state. Do not fabricate content.
 6. **Architecture docs win**: when a generated file conflicts with `boundaries/<stack>/ARCHITECTURE.md`, the doc is right.
 
 ## UI Install Hint Mapping
@@ -161,8 +169,8 @@ Print file list, CLI results, next steps (fill .env.local, run dev, typecheck/li
 
 | Stack | Arch doc | Matrix |
 |---|---|---|
-| Vue | `boundaries/vue/ARCHITECTURE.md` | `workflows/matrices/vue.matrix.md` |
-| React | `boundaries/react/ARCHITECTURE.md` | `workflows/matrices/react.matrix.md` |
-| React Native | `boundaries/react-native/ARCHITECTURE.md` | `workflows/matrices/react-native.matrix.md` |
-| Electron | `boundaries/electron/ARCHITECTURE.md` | `workflows/matrices/electron.matrix.md` |
-| Node full-stack | `boundaries/node-fullstack/ARCHITECTURE.md` | `workflows/matrices/node-fullstack.matrix.md` |
+| Vue | `<DATA_DIR>/boundaries/vue/ARCHITECTURE.md` | `<DATA_DIR>/matrices/vue.matrix.md` |
+| React | `<DATA_DIR>/boundaries/react/ARCHITECTURE.md` | `<DATA_DIR>/matrices/react.matrix.md` |
+| React Native | `<DATA_DIR>/boundaries/react-native/ARCHITECTURE.md` | `<DATA_DIR>/matrices/react-native.matrix.md` |
+| Electron | `<DATA_DIR>/boundaries/electron/ARCHITECTURE.md` | `<DATA_DIR>/matrices/electron.matrix.md` |
+| Node full-stack | `<DATA_DIR>/boundaries/node-fullstack/ARCHITECTURE.md` | `<DATA_DIR>/matrices/node-fullstack.matrix.md` |
