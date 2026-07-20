@@ -133,7 +133,7 @@
     { "src": "config/env.example", "dest": "apps/api/.env.example", "placeholders": { "%API_BASE_VAR%": "PORT" }, "extraLines": ["DATABASE_URL=postgres://user:pass@localhost:5432/dbname", "CORS_ORIGIN=http://localhost:5173"] },
     { "src": "http/errors.server.ts", "dest": "apps/api/src/shared/http/errors.ts" },
     { "src": "node/request-id.middleware.ts", "dest": "apps/api/src/shared/middleware/request-id.ts" },
-    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENTS.md" },
     { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
   ],
   "universalWrites": [
@@ -151,8 +151,8 @@
   },
   "webDelegationRules": [
     "Generate web app files at apps/web/ instead of project root",
-    "Skip web app's AGENT.md and CLAUDE.md — only one set at repo root",
-    "Root AGENT.md uses web framework's resolved choices for UI dimensions",
+    "Skip web app's AGENTS.md and CLAUDE.md — only one set at repo root",
+    "Root AGENTS.md uses web framework's resolved choices for UI dimensions",
     "When webFramework=none, use 'n/a' for all UI dimensions"
   ],
   "postInitCli": [

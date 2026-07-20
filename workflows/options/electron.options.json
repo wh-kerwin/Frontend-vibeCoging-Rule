@@ -76,7 +76,7 @@
     { "src": "electron/main.security.ts", "dest": "src/main/main.ts" },
     { "src": "electron/preload.bridge.ts", "dest": "src/preload/index.ts" },
     { "src": "electron/preload.api.example.ts", "dest": "src/preload/api.ts" },
-    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENTS.md" },
     { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
   ],
   "universalWrites": [
@@ -95,7 +95,7 @@
     "Generate renderer files at src/renderer/ instead of src/",
     "Merge renderer vite.config.ts into root electron.vite.config.ts",
     "Skip renderer's src/shared/http/client.ts unless user opts in",
-    "Skip renderer's AGENT.md and CLAUDE.md — only one set at repo root"
+    "Skip renderer's AGENTS.md and CLAUDE.md — only one set at repo root"
   ],
   "postInitCli": [
     { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },

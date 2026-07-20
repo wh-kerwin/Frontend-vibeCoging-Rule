@@ -1,7 +1,7 @@
 export type Stack = 'vue' | 'react' | 'react-native' | 'electron' | 'node-fullstack'
 export type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun'
 
-export type ThemeMode = 'light-dark-system' | 'light-only' | 'dark-only' | 'custom-token-preset'
+export type ThemeMode = 'light-dark-system' | 'light-only' | 'dark-only'
 
 export interface ThemeConfig {
   mode: ThemeMode

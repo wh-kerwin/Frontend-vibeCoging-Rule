@@ -1,8 +1,8 @@
 # Claude Project Instructions — %PACKAGE_NAME%
 
-**Primary contract: `AGENT.md`.** Read it first. This file lists Claude / Cursor specific adaptations only.
+**Primary contract: `AGENTS.md`.** Read it first. This file lists Claude / Cursor specific adaptations only.
 
-## Tech stack snapshot (must match AGENT.md)
+## Tech stack snapshot (must match AGENTS.md)
 
 - Stack: %STACK%
 - UI library: %UI_LIBRARY% — add components with: %UI_INSTALL_HINT_INLINE%
@@ -15,7 +15,7 @@
 
 ## Required read order
 
-1. `AGENT.md` (this project) — engineering rules and the "use the UI library, don't hand-roll" hard rule.
+1. `AGENTS.md` (this project) — engineering rules and the "use the UI library, don't hand-roll" hard rule.
 2. Canonical boundaries (fetch when needed):
    - `%REPO_RAW_BASE%boundaries/%STACK%/ARCHITECTURE.md`
    - `%REPO_RAW_BASE%boundaries/common/` — coding-style, directory-rules, encapsulation, http-contract, async-states, design-system
@@ -70,8 +70,8 @@ Fast is acceptable only when the result is easy to inspect:
 - Small reusable primitives over large universal components.
 - Boring data flow over clever state synchronization.
 - All four async UI states (loading / empty / error / success) — never just the success path.
-- Library primitives over hand-rolled markup — always (see AGENT.md R1).
+- Library primitives over hand-rolled markup — always (see AGENTS.md R1).
 
 ## When in doubt
 
-Read `AGENT.md` again. The rules there are the contract.
+Read `AGENTS.md` again. The rules there are the contract.

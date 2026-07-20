@@ -1,10 +1,10 @@
 # Claude Project Instructions
 
-**Primary contract: `AGENT.md`.** Read it first. This file only lists Claude-specific adaptations.
+**Primary contract: `AGENTS.md`.** Read it first. This file only lists Claude-specific adaptations.
 
 ## Required Read Order
 
-1. `AGENT.md` — engineering rules and collaboration protocol
+1. `AGENTS.md` — engineering rules and collaboration protocol
 2. `boundaries/<stack>/ARCHITECTURE.md` — target stack conventions
 3. `boundaries/common/` — cross-stack rules (coding-style, http-contract, design-system, directory-rules, async-states, encapsulation)
 4. Existing files in the target area — inspect before editing

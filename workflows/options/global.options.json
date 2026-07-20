@@ -20,11 +20,6 @@
           "value": "dark-only",
           "label": "Dark only",
           "description": "Only generates dark tokens. Suited for dashboards and dev tools."
-        },
-        {
-          "value": "custom-token-preset",
-          "label": "Custom token preset",
-          "description": "Use a user-specified token preset file."
         }
       ]
     },
@@ -86,17 +81,6 @@
       "dependsOn": { "i18n": ["vue-i18n", "react-i18next", "expo-localization+i18next"] },
       "freeText": true,
       "multiValue": true
-    },
-    "auth": {
-      "question": "Authentication strategy",
-      "default": "none",
-      "choices": [
-        {
-          "value": "none",
-          "label": "None (placeholder)",
-          "description": "No auth scaffolding. Add manually later."
-        }
-      ]
     }
   },
   "envStrategy": {

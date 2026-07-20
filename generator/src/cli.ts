@@ -1,11 +1,11 @@
 #!/usr/bin/env node
+import path from 'node:path'
 import { Command } from 'commander'
 import prompts from 'prompts'
 import { loadConfigFile } from './config/validate-config.js'
 import { resolveConfig } from './config/resolve-config.js'
 import { buildFilePlan } from './engine/build-file-plan.js'
 import { writeProject, printDryRun } from './engine/write-project.js'
-import { STACK_DEFAULTS, GLOBAL_DEFAULTS } from './config/defaults.js'
 import type { PackageManager, Stack } from './types.js'
 
 const program = new Command()
@@ -28,7 +28,7 @@ program
         scaffoldConfig = loadConfigFile(opts.config)
       } else if (opts.stack) {
         scaffoldConfig = {
-          name: opts.target?.split('/').pop() ?? 'my-app',
+          name: opts.target ? path.basename(path.resolve(opts.target)) : 'my-app',
           stack: opts.stack as Stack,
           packageManager: 'pnpm' as PackageManager,
           choices: {},
@@ -77,7 +77,7 @@ async function interactivePrompt() {
   const stack = stackResponse.stack as Stack
 
   const uiChoices = getUIChoices(stack)
-  const uiResponse = uiChoices.length > 0
+  const uiResponse: { uiLibrary?: string } = uiChoices.length > 0
     ? await prompts({
         type: 'select',
         name: 'uiLibrary',
@@ -87,7 +87,7 @@ async function interactivePrompt() {
     : {}
 
   const cssChoices = getCSSChoices(stack)
-  const cssResponse = cssChoices.length > 0
+  const cssResponse: { atomicCss?: string } = cssChoices.length > 0
     ? await prompts({
         type: 'select',
         name: 'atomicCss',

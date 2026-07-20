@@ -139,7 +139,7 @@
         },
         "theme": {
           "type": "string",
-          "enum": ["light-dark-system", "light-only", "dark-only", "custom-token-preset"],
+          "enum": ["light-dark-system", "light-only", "dark-only"],
           "default": "light-dark-system",
           "description": "Theme switching strategy"
         },

@@ -39,7 +39,7 @@ Use caret ranges in generated `package.json`.
 ### Choices.build_tool
 
 #### `vite` (default)
-- `dev_deps`: `vite ^8.0`, `@vitejs/plugin-react ^4.5`
+- `dev_deps`: `vite ^8.0`, `@vitejs/plugin-react ^6.0`
 - `writes`: `vite.config.ts` (alias `@` + plugins), `index.html`, `src/main.tsx`
 
 #### `next`
@@ -53,7 +53,7 @@ Use caret ranges in generated `package.json`.
 - `deps`: `@radix-ui/react-slot ^1.1`, `class-variance-authority ^0.7`, `clsx ^2.1`, `tailwind-merge ^3.3`, `tw-animate-css ^1.4`
 - Radix UI primitives are added per-component as `shadcn-ui add` is run later. Do not predeclare them all.
 - `dev_deps`: `shadcn ^2.4` (the React-flavored CLI)
-- `cli`: none for init — workflow hand-writes `components.json` below; post-install runs `pnpm dlx shadcn@latest add button card input dialog label`
+- `cli`: none for init — the generator writes `components.json`; post-install uses the pinned component seed command
 - `writes`: `components.json` (inline below)
 - `snippets`: `lib/cn.ts`
 
@@ -196,7 +196,7 @@ When `build_tool: next` is selected, set `"rsc": true` and adjust aliases to the
 | `tsconfig.json` | `shared/snippets/config/tsconfig.strict.json` + add `"jsx": "react-jsx"` |
 | `eslint.config.js` | `shared/snippets/config/eslint.flat.ts.js` + add `eslint-plugin-react-hooks` block |
 | `.env.example` | `shared/snippets/config/env.example` with `%API_BASE_VAR%` → `VITE_API_BASE_URL` (vite) or `NEXT_PUBLIC_API_BASE_URL` (next) |
-| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `routes` (vite) / `pages` (next), `%DATA_DIR%` → `hooks`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (hook)` |
+| `AGENTS.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `routes` (vite) / `pages` (next), `%DATA_DIR%` → `hooks`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (hook)` |
 | `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `src/main.tsx` (vite) / `app/layout.tsx` (next) | Inline — provider stack assembled from selected choices |
 | `src/App.tsx` (vite) / `app/page.tsx` (next) | Inline minimal placeholder |
@@ -210,7 +210,7 @@ When `build_tool: next` is selected, set `"rsc": true` and adjust aliases to the
 | Choice | Command | Mode |
 |---|---|---|
 | `tests: vitest` | `<pm> install` | auto |
-| `ui_library: shadcn-ui` | `<pm> dlx shadcn@latest add button card input dialog label` | auto |
+| `ui_library: shadcn-ui` | `<pm> dlx shadcn@2.4 add button card input dialog label` | auto after install |
 
 Do **not** run `shadcn init` — `components.json` is hand-written above.
 

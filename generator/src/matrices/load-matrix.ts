@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { ChoiceOptions, StackOptions } from '../types.js'
+import type { ChoiceOptions, GlobalOptions, StackOptions } from '../types.js'
 
 const OPTIONS_DIR = path.resolve(
   import.meta.dirname,
@@ -13,6 +13,11 @@ export function loadStackOptions(stack: string): StackOptions {
     throw new Error(`Stack options not found: ${filePath}`)
   }
   return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as StackOptions
+}
+
+export function loadGlobalOptions(): GlobalOptions {
+  const filePath = path.join(OPTIONS_DIR, 'global.options.json')
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as GlobalOptions
 }
 
 export function getChoiceOptions(

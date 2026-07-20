@@ -134,7 +134,7 @@ Same as React: `react-hook-form+zod` (default) or `none`.
 | `tsconfig.json` | `shared/snippets/config/tsconfig.strict.json` minus `"DOM"`/`"DOM.Iterable"` libs; add `"jsx": "react-jsx"` |
 | `eslint.config.js` | `shared/snippets/config/eslint.flat.ts.js` + `eslint-plugin-react-hooks` block |
 | `.env.example` | `shared/snippets/config/env.example` with `%API_BASE_VAR%` → `EXPO_PUBLIC_API_BASE_URL` |
-| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `screens`, `%DATA_DIR%` → `hooks`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (hook)` |
+| `AGENTS.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `screens`, `%DATA_DIR%` → `hooks`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (hook)` |
 | `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `app/_layout.tsx` | Inline — providers + Stack/Drawer setup |
 | `src/shared/http/client.ts` | `shared/snippets/http/client.rn.ts` (uses global `setTimeout`) |

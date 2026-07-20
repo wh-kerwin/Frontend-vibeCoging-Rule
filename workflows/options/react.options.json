@@ -29,7 +29,7 @@
     "buildTool": {
       "choices": {
         "vite": {
-          "devDeps": { "vite": "^8.0", "@vitejs/plugin-react": "^4.5" },
+          "devDeps": { "vite": "^8.0", "@vitejs/plugin-react": "^6.0" },
           "writes": ["vite.config.ts", "index.html", "src/main.tsx"]
         },
         "next": {
@@ -53,7 +53,7 @@
           "snippets": ["lib/cn.ts"],
           "writes": ["components.json"],
           "commands": [
-            { "command": "%PM% dlx shadcn@latest add button card input dialog label", "mode": "auto" }
+            { "command": "%PM% dlx shadcn@2.4 add button card input dialog label", "mode": "auto" }
           ]
         },
         "mantine": {
@@ -196,7 +196,7 @@
     { "src": "config/env.example", "dest": ".env.example", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
     { "src": "http/client.web.ts", "dest": "src/shared/http/client.ts", "placeholders": { "%API_BASE_VAR%": "VITE_API_BASE_URL" } },
     { "src": "http/errors.client.ts", "dest": "src/shared/http/errors.ts" },
-    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENTS.md" },
     { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
   ],
   "universalWrites": [
@@ -218,6 +218,6 @@
   },
   "postInitCli": [
     { "command": "%PM% install", "mode": "auto", "reason": "Install dependencies" },
-    { "command": "%PM% dlx shadcn@latest add button card input dialog label", "mode": "auto", "condition": "uiLibrary === 'shadcn-ui'", "reason": "Seed shadcn-ui primitives" }
+    { "command": "%PM% dlx shadcn@2.4 add button card input dialog label", "mode": "auto", "condition": "uiLibrary === 'shadcn-ui'", "reason": "Seed shadcn-ui primitives" }
   ]
 }

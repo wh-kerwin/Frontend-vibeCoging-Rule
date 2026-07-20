@@ -4,7 +4,7 @@
 
 ## 入口文件
 
-- `AGENT.md`: AI Agent 的主规范。
+- `AGENTS.md`: AI Agent 的主规范。
 - `CLAUDE.md`: Claude/Cursor 类编码助手的项目指令。
 - `projects.rules`: 大模型可读的规则声明。
 - `design.md`: 视觉设计系统(可按需切换不同的设计 reference,如 VoltAgent、Vercel、Linear 等)。
@@ -15,13 +15,13 @@
 - `workflows/new-project.md` — 通用工作流协议,任何 AI 工具都能读懂照做。
 - `workflows/matrices/<stack>.matrix.md` — 每个技术栈的可选项矩阵与默认组合。
 - `workflows/options/<stack>.options.json` — 矩阵的机器可读版本,供生成器和测试使用。
-- `workflows/options/global.options.json` — 跨栈全局配置维度(theme、i18n、auth)。
+- `workflows/options/global.options.json` — 跨栈全局配置维度(theme、i18n)。
 - `schemas/scaffold-config.schema.json` — 脚手架输入配置 JSON Schema。
 - `schemas/resolved-config.schema.json` — 解析后的完整配置 JSON Schema。
 - `boundaries/common/` — 跨技术栈的工程边界(命名、目录、组件化、HTTP、async UI 状态、coding style)。
 - `boundaries/<stack>/ARCHITECTURE.md` — 各技术栈的架构约束。
 - `shared/snippets/` — 可被工作流引用的代码片段(HTTP client、AppError、cn、tokens、theme、i18n 等)。
-- `generator/` — TypeScript CLI 脚手架生成器,与 AI workflow 等价。
+- `generator/` — 唯一负责写入项目文件的 TypeScript CLI 生成器;AI workflow 负责收集、预览和确认配置。
 - `skills/new-project/` — Claude Code skill,一条命令安装,无需手动配置。
 
 ## 安装 Skill(推荐,Claude Code 用户)
@@ -32,8 +32,10 @@
 
 本仓库根目录下的 `skills/new-project/` 是一个标准的 Claude Code skill:
 
-- `SKILL.md` — skill 入口,获取并执行完整工作流
-- `REFERENCE.md` — 精简参考,离线回退时使用
+- `SKILL.md` — 精简的问答、配置与 Generator 编排入口
+- `agents/openai.yaml` — Codex UI 元数据
+- `scripts/` — skill bundle 同步与漂移校验
+- `data/` — 离线 boundaries、matrices 与 snippets 快照
 
 ### 从 GitHub 安装(推荐)
 
@@ -120,18 +122,18 @@ export FRONTEND_RULES_ROOT=/path/to/frontend-rules
 
 工作流会:
 
-1. 问 4 个必答(项目类型 / UI 库 / 原子化 CSS / 包管理器)。
-2. 可选深度定制(路由、状态、数据、表单、测试、动画)。
-3. 全局定制(主题切换策略 / i18n 国际化)。
-4. 查矩阵 → 组装文件 → 跑必要的 CLI → 给出生成报告与下一步。
+1. 确认项目名、项目类型、复合栈子框架和包管理器。
+2. 选择推荐默认值,或按 options JSON 深度定制 UI、CSS、路由、状态、主题与 i18n。
+3. 生成临时 JSON 配置并执行 Generator dry-run。
+4. 用户确认后由 Generator 写入,随后执行 typecheck、build 和 test。
 
 ### 方式二:Generator CLI
 
-本仓库提供了一个 TypeScript CLI 生成器,与 AI workflow 产出等价的项目:
+本仓库提供 TypeScript CLI 生成器。AI workflow 和 Skill 最终都调用这个入口,避免由模型自行拼装两套不同产物:
 
 ```bash
 # 安装依赖
-cd generator && npm install
+cd generator && npm ci
 
 # 交互式生成(与 AI 一样的问题流)
 npx tsx src/cli.ts scaffold --target ../my-app
@@ -164,7 +166,7 @@ npx tsx src/cli.ts scaffold --stack react --target ../my-app --dry-run
 
 ## 改造已有项目
 
-让 AI 先读 `AGENT.md` + `boundaries/<stack>/ARCHITECTURE.md` + `boundaries/common/` 中相关文件,再进行局部改造。需要某段标准实现时,从 `shared/snippets/` 里直接复制对应文件(同样支持远端 fetch)。
+让 AI 先读 `AGENTS.md` + `boundaries/<stack>/ARCHITECTURE.md` + `boundaries/common/` 中相关文件,再进行局部改造。需要某段标准实现时,从 `shared/snippets/` 里直接复制对应文件(同样支持远端 fetch)。
 
 ## 核心原则
 

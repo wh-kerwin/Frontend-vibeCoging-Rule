@@ -40,7 +40,7 @@
       "properties": {
         "mode": {
           "type": "string",
-          "enum": ["light-dark-system", "light-only", "dark-only", "custom-token-preset"]
+          "enum": ["light-dark-system", "light-only", "dark-only"]
         },
         "preset": {
           "type": "string",

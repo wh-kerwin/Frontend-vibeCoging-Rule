@@ -334,7 +334,7 @@ When NativeWind is selected, Tailwind utility class names work; otherwise the eq
 When asking an AI agent to build UI, use:
 
 ```txt
-Read AGENT.md and design.md first.
+Read AGENTS.md and design.md first.
 Use the selected DESIGN.md style: VoltAgent-inspired developer tool.
 Build the actual usable screen, not a marketing placeholder.
 Use dark technical surfaces, warm charcoal borders, restrained emerald accents, typed data states, and component boundaries from the stack architecture.
@@ -343,7 +343,7 @@ Use dark technical surfaces, warm charcoal borders, restrained emerald accents, 
 To switch style:
 
 ```txt
-Use the <project-name> DESIGN.md from https://github.com/VoltAgent/awesome-design-md as the visual reference, but keep this repository's engineering rules from AGENT.md and projects.rules.
+Use the <project-name> DESIGN.md from https://github.com/VoltAgent/awesome-design-md as the visual reference, but keep this repository's engineering rules from AGENTS.md and projects.rules.
 ```
 
 ## 10. Design Quality Checklist
@@ -358,4 +358,3 @@ Use the <project-name> DESIGN.md from https://github.com/VoltAgent/awesome-desig
 - No unbounded custom colors.
 - Layout remains usable at mobile, tablet, desktop, and wide sizes.
 - The result looks like a specific product, not a generic template.
-

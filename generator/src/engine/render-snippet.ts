@@ -34,6 +34,7 @@ const ALLOWED_PLACEHOLDERS = new Set([
   '%UNOCSS_PLUGIN%',
   '%PM%',
   '%THEME_MODE%',
+  '%THEME_PRESET%',
   '%DEFAULT_LOCALE%',
   '%I18N_LIBRARY%',
 ])

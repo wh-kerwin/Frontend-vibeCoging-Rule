@@ -1,6 +1,6 @@
 # Scaffold Generator
 
-`generator/` 是 `frontend-rules` 的本地 CLI 脚手架生成器,与 AI workflow (`workflows/new-project.md`) 产出等价的项目结构。
+`generator/` 是 `frontend-rules` 唯一负责写入项目文件的 CLI。AI workflow 和 Skill 只收集并确认配置,然后调用该生成器。
 
 ## 架构
 
@@ -71,7 +71,7 @@ scaffold.config.json / 交互式问答
 ## 使用方式
 
 ```bash
-cd generator && npm install
+cd generator && npm ci
 
 # 交互式
 npx tsx src/cli.ts scaffold --target ../my-app
@@ -88,14 +88,13 @@ npx vitest run
 
 ## 与 AI Workflow 的关系
 
-- AI workflow 读 `workflows/matrices/*.matrix.md`(Markdown) + `shared/snippets/`
-- Generator CLI 读 `workflows/options/*.options.json`(JSON) + `shared/snippets/`
-- 两者共享 `schemas/` 定义的输入/输出 schema
-- Markdown 是面向人和 AI 的文档;JSON 是面向程序的数据源
-- 两者的默认值应当一致,通过测试保证
+- AI workflow 读取所选 stack 的 `workflows/options/*.options.json`,生成配置并调用 Generator。
+- Generator 读取 JSON options、schemas 与 `shared/snippets/`,并独占文件写入职责。
+- Markdown matrix 是面向人的参考;与 JSON 冲突时以 JSON 和 schema 为准。
+- Electron renderer 与 Node web 子应用通过同一 file-plan 逻辑递归生成并添加路径前缀。
 
 ## 已知限制
 
-- Electron 和 node-fullstack 的 nested generation 目前只解析嵌套 config,不递归生成嵌套项目的文件
-- `--merge` 模式(写入非空目录)不在第一阶段计划中
-- 版本号来自 options JSON 的 `versionBaseline`,需要定期维护
+- `--merge` 模式不支持;目标目录必须为空或只包含 `.git/`。
+- 版本号来自 options JSON 的 `versionBaseline`,需要定期维护并通过五栈生成合同测试。
+- 交互式 CLI 提供基础问答;Skill/AI workflow 负责完整的逐项定制与确认体验。

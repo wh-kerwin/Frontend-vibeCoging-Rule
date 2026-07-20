@@ -61,7 +61,7 @@ See `boundaries/common/directory-rules.md` for the cross-stack rules these subfo
 When the matrix selects shadcn/vue + Tailwind, use the three-tool model with clear ownership:
 
 - **Tailwind v4**: utility classes, responsive layout, token-based color/spacing utilities. Config is CSS-first via `@theme inline` inside `src/shared/styles/tokens.css` — there is no `tailwind.config.ts`.
-- **shadcn/vue (Reka UI)**: accessible primitives in `src/components/ui/*`. Add new components via `pnpm dlx shadcn-vue@latest add <name>`.
+- **shadcn/vue (Reka UI)**: accessible primitives in `src/components/ui/*`. Add new components via the pinned project command, for example `pnpm dlx shadcn-vue@2.7 add <name>`.
 - **UnoCSS** (optional hybrid): shortcuts (`surface-card`, `h-stack`, `focus-ring`) and icon utilities (`i-lucide-*` via `@iconify-json/lucide`). Color tokens are **not** mirrored here — Tailwind owns them.
 
 Token values live in `src/shared/styles/tokens.css` as CSS custom properties. The `@theme inline` block re-exports them as Tailwind theme variables. Two presets are available in `shared/snippets/styles/`:

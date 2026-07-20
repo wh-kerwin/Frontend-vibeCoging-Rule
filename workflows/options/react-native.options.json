@@ -165,7 +165,7 @@
     { "src": "http/client.rn.ts", "dest": "src/shared/http/client.ts" },
     { "src": "http/errors.client.ts", "dest": "src/shared/http/errors.ts" },
     { "src": "storage/preferences.rn.ts", "dest": "src/shared/storage/preferences.ts" },
-    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENT.md" },
+    { "src": "project-docs/AGENT.md.tmpl", "dest": "AGENTS.md" },
     { "src": "project-docs/CLAUDE.md.tmpl", "dest": "CLAUDE.md" }
   ],
   "universalWrites": [

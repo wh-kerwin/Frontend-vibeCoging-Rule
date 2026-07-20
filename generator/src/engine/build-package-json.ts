@@ -12,6 +12,25 @@ export function buildPackageJson(config: ResolvedConfig): PackageJsonResult {
 
   const deps: Record<string, string> = { ...options.universalDeps.deps }
   const devDeps: Record<string, string> = { ...options.universalDeps.devDeps }
+  Object.assign(devDeps, {
+    '@eslint/js': '^9.0',
+    '@types/node': '^22.0',
+    eslint: '^9.0',
+    'typescript-eslint': '^8.0',
+  })
+  if (config.stack === 'react') {
+    devDeps['@types/react'] = '^19.0'
+    devDeps['@types/react-dom'] = '^19.0'
+  }
+  if (config.stack === 'vue') {
+    devDeps.vite = options.versionBaseline.vite ?? '^8.0'
+  }
+  if (config.stack === 'react-native') {
+    devDeps['@types/react'] = '^19.0'
+  }
+  if (config.stack === 'node-fullstack') {
+    devDeps.tsx = '^4.19'
+  }
   const scripts: Record<string, string> = {
     dev: resolveDevScript(config),
     build: resolveBuildScript(config),
@@ -35,6 +54,8 @@ export function buildPackageJson(config: ResolvedConfig): PackageJsonResult {
   if (config.i18n.enabled) {
     mergeI18nDeps(config, deps)
   }
+
+  mergeIconDeps(config, deps)
 
   if (config.theme.mode !== 'light-only') {
     mergeThemeDeps(config, deps)
@@ -80,6 +101,13 @@ function mergeI18nDeps(config: ResolvedConfig, deps: Record<string, string>) {
 function mergeThemeDeps(_config: ResolvedConfig, _deps: Record<string, string>) {
   // Theme doesn't add new deps beyond what the stack already provides
   // (tokens.css + Tailwind/UnoCSS handle it)
+}
+
+function mergeIconDeps(config: ResolvedConfig, deps: Record<string, string>) {
+  const icons = config.choices.icons
+  if (icons === 'lucide-react') deps['lucide-react'] = '^1.25.0'
+  if (icons === 'lucide-vue-next') deps['lucide-vue-next'] = '^1.0.0'
+  if (icons === 'lucide-react-native') deps['lucide-react-native'] = '^1.25.0'
 }
 
 function resolveDevScript(config: ResolvedConfig): string {

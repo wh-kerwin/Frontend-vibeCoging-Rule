@@ -7,7 +7,7 @@ import type {
   ThemeConfig,
   ThemeMode,
 } from '../types.js'
-import { GLOBAL_DEFAULTS, I18N_LIBRARY_MAP, STACK_DEFAULTS } from './defaults.js'
+import { loadGlobalOptions, loadStackOptions } from '../matrices/load-matrix.js'
 
 export function resolveConfig(
   input: ScaffoldConfig,
@@ -15,7 +15,7 @@ export function resolveConfig(
 ): ResolvedConfig {
   const stack = input.stack
   const userChoices = input.choices ?? {}
-  const stackDefaults = STACK_DEFAULTS[stack]
+  const stackDefaults = getStackDefaults(stack)
 
   const choices: Record<string, string | string[]> = { ...stackDefaults }
   for (const [key, value] of Object.entries(userChoices)) {
@@ -78,9 +78,10 @@ export function resolveConfig(
 function resolveTheme(
   userChoices: Record<string, string | string[]>,
 ): ThemeConfig {
-  const mode = (userChoices.theme as ThemeMode) ?? GLOBAL_DEFAULTS.theme
+  const defaults = getGlobalDefaults()
+  const mode = (userChoices.theme as ThemeMode) ?? defaults.theme
   const preset =
-    (userChoices.themePreset as string) ?? GLOBAL_DEFAULTS.themePreset
+    (userChoices.themePreset as string) ?? defaults.themePreset
 
   return { mode, preset }
 }
@@ -89,23 +90,24 @@ function resolveI18n(
   stack: Stack,
   userChoices: Record<string, string | string[]>,
 ): I18nConfig {
-  const i18nChoice = (userChoices.i18n as string) ?? GLOBAL_DEFAULTS.i18n
+  const defaults = getGlobalDefaults()
+  const i18nChoice = (userChoices.i18n as string) ?? defaults.i18n
 
   if (i18nChoice === 'none') {
     return {
       enabled: false,
       library: null,
-      defaultLocale: GLOBAL_DEFAULTS.defaultLocale,
-      locales: GLOBAL_DEFAULTS.locales,
+      defaultLocale: defaults.defaultLocale,
+      locales: [...defaults.locales],
     }
   }
 
   const library = i18nChoice
   const defaultLocale =
-    (userChoices.defaultLocale as string) ?? GLOBAL_DEFAULTS.defaultLocale
+    (userChoices.defaultLocale as string) ?? defaults.defaultLocale
   const locales = Array.isArray(userChoices.locales)
-    ? userChoices.locales
-    : GLOBAL_DEFAULTS.locales
+    ? [...userChoices.locales]
+    : [...defaults.locales]
 
   if (!locales.includes(defaultLocale)) {
     locales.unshift(defaultLocale)
@@ -126,7 +128,7 @@ function resolveNestedConfig(
     choices: parentInput.choices,
   }
 
-  const nestedDefaults = STACK_DEFAULTS[nestedStack]
+  const nestedDefaults = getStackDefaults(nestedStack)
   const userChoices = parentInput.choices ?? {}
   const choices: Record<string, string | string[]> = { ...nestedDefaults }
 
@@ -147,5 +149,23 @@ function resolveNestedConfig(
     choices,
     theme,
     i18n,
+  }
+}
+
+function getStackDefaults(stack: Stack): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(loadStackOptions(stack).defaults)
+      .filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
+  )
+}
+
+function getGlobalDefaults() {
+  const dimensions = loadGlobalOptions().dimensions
+  return {
+    theme: dimensions.theme.default as ThemeMode,
+    themePreset: dimensions.themePreset.default as string,
+    i18n: dimensions.i18n.default as string,
+    defaultLocale: dimensions.defaultLocale.default as string,
+    locales: dimensions.locales.default as string[],
   }
 }

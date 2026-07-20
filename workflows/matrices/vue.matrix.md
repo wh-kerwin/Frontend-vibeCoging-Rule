@@ -38,7 +38,7 @@ Use caret ranges in generated `package.json` unless a known major regression dem
 #### `shadcn-vue` (default)
 - `deps`: `reka-ui ^2.8`, `class-variance-authority ^0.7`, `clsx ^2.1`, `tailwind-merge ^3.3`, `tw-animate-css ^1.4`
 - `dev_deps`: `shadcn-vue ^2.7`, `@iconify-json/lucide ^1.2` (only when UnoCSS selected)
-- `cli`: none — workflow hand-writes `components.json` (see Universal writes); post-install runs `pnpm dlx shadcn-vue@latest add button card input dialog label` to seed primitives
+- `cli`: none — the generator writes `components.json`; post-install runs the pinned component seed command
 - `writes`: `components.json` (inline below)
 - `snippets`: `lib/cn.ts`
 
@@ -199,7 +199,7 @@ export default defineConfig({
 | `tsconfig.json` | `shared/snippets/config/tsconfig.strict.json` + add `"jsx": "preserve"` |
 | `eslint.config.js` | `shared/snippets/config/eslint.flat.ts.js` + add `eslint-plugin-vue` block |
 | `.env.example` | `shared/snippets/config/env.example` with `%API_BASE_VAR%` → `VITE_API_BASE_URL` |
-| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `views`, `%DATA_DIR%` → `composables`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (composable)` |
+| `AGENTS.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%VIEWS_DIR%` → `views`, `%DATA_DIR%` → `composables`, `%DATA_HOOK_PATTERN%` → `use<Name>.ts (composable)` |
 | `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `src/main.ts` | Inline — `createApp(App)` + selected plugins (router/pinia/Query) + mount |
 | `src/App.vue` | Inline minimal shell — `<RouterView />` if router, else `<HelloWorld />` placeholder |
@@ -233,7 +233,7 @@ export default defineConfig({
 | Choice | Command | Mode |
 |---|---|---|
 | `tests: vitest` | `<pm> install` | auto |
-| `ui_library: shadcn-vue` | `<pm> dlx shadcn-vue@latest add button card input dialog label` | auto (non-interactive — shadcn-vue add accepts component list as args) |
+| `ui_library: shadcn-vue` | `<pm> dlx shadcn-vue@2.7 add button card input dialog label` | auto after install |
 
 Do **not** run `shadcn-vue init` — `components.json` is hand-written above.
 

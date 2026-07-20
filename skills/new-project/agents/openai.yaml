@@ -1,0 +1,4 @@
+interface:
+  display_name: "New Frontend Project"
+  short_description: "Scaffold a validated project from Frontend Rules"
+  default_prompt: "Use $new-project to scaffold a supported project in this empty directory."

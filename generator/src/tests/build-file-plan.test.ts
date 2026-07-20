@@ -4,6 +4,38 @@ import { buildFilePlan } from '../engine/build-file-plan.js'
 import type { ScaffoldConfig } from '../types.js'
 
 describe('buildFilePlan', () => {
+  it('generates Vue default entry files', () => {
+    const resolved = resolveConfig({
+      name: 'test-vue',
+      stack: 'vue',
+      packageManager: 'pnpm',
+    }, '/tmp/test-vue')
+    const paths = buildFilePlan(resolved).files.map((file) => file.path)
+
+    expect(paths).toEqual(expect.arrayContaining([
+      'index.html',
+      'vite.config.ts',
+      'src/main.ts',
+      'src/App.vue',
+      'src/app/router.ts',
+      'components.json',
+      'uno.config.ts',
+      'AGENTS.md',
+    ]))
+  })
+
+  it('uses the selected VoltAgent token preset', () => {
+    const resolved = resolveConfig({
+      name: 'voltagent-react',
+      stack: 'react',
+      packageManager: 'pnpm',
+      choices: { themePreset: 'voltagent' },
+    }, '/tmp/voltagent-react')
+    const tokens = buildFilePlan(resolved).files.find((file) => file.path === 'src/shared/styles/tokens.css')
+
+    expect(tokens?.content).toContain('VoltAgent design preset')
+  })
+
   it('generates React default file plan', () => {
     const input: ScaffoldConfig = {
       name: 'test-react',
@@ -15,11 +47,39 @@ describe('buildFilePlan', () => {
 
     expect(plan.files.length).toBeGreaterThan(0)
     expect(plan.packageJson.dependencies).toHaveProperty('react')
+    expect(plan.packageJson.dependencies).toHaveProperty('lucide-react')
     expect(plan.packageJson.devDependencies).toHaveProperty('typescript')
     expect(plan.commands.length).toBeGreaterThan(0)
 
     const filePaths = plan.files.map((f) => f.path)
     expect(filePaths).toContain('src/config/env.ts')
+    expect(filePaths).toEqual(expect.arrayContaining([
+      'index.html',
+      'vite.config.ts',
+      'src/main.tsx',
+      'src/App.tsx',
+      'src/app/router.tsx',
+      'components.json',
+      'uno.config.ts',
+      'AGENTS.md',
+    ]))
+    expect(filePaths).not.toContain('AGENT.md')
+
+    const components = JSON.parse(plan.files.find((file) => file.path === 'components.json')?.content ?? '{}')
+    expect(components).toMatchObject({
+      rsc: false,
+      tsx: true,
+      iconLibrary: 'lucide',
+      tailwind: {
+        css: 'src/shared/styles/tokens.css',
+        cssVariables: true,
+      },
+      aliases: {
+        components: '@/components',
+        utils: '@/shared/lib/cn',
+        hooks: '@/hooks',
+      },
+    })
   })
 
   it('generates React + theme + i18n file plan', () => {
@@ -113,6 +173,25 @@ describe('buildFilePlan', () => {
     expect(plan.packageJson.dependencies).toHaveProperty('i18next')
   })
 
+  it('generates React Native Expo entry files', () => {
+    const resolved = resolveConfig({
+      name: 'test-native',
+      stack: 'react-native',
+      packageManager: 'pnpm',
+    }, '/tmp/test-native')
+    const paths = buildFilePlan(resolved).files.map((file) => file.path)
+
+    expect(paths).toEqual(expect.arrayContaining([
+      'app.json',
+      'babel.config.js',
+      'metro.config.js',
+      'app/_layout.tsx',
+      'app/index.tsx',
+      'app/+not-found.tsx',
+      'AGENTS.md',
+    ]))
+  })
+
   it('Electron generates nested renderer config', () => {
     const input: ScaffoldConfig = {
       name: 'electron-app',
@@ -124,7 +203,61 @@ describe('buildFilePlan', () => {
     const plan = buildFilePlan(resolved)
 
     expect(plan.packageJson.devDependencies).toHaveProperty('electron-vite')
+    expect(plan.packageJson.dependencies).toHaveProperty('vue')
     expect(plan.commands.length).toBeGreaterThan(0)
+
+    const filePaths = plan.files.map((f) => f.path)
+    expect(filePaths).toEqual(expect.arrayContaining([
+      'electron.vite.config.ts',
+      'tsconfig.main.json',
+      'tsconfig.preload.json',
+      'src/renderer/index.html',
+      'src/renderer/src/main.ts',
+      'src/renderer/src/App.vue',
+    ]))
+    expect(filePaths.filter((path) => path === 'AGENTS.md')).toHaveLength(1)
+  })
+
+  it('Electron React renderer uses the React Vite plugin', () => {
+    const resolved = resolveConfig({
+      name: 'electron-react',
+      stack: 'electron',
+      packageManager: 'pnpm',
+      choices: { rendererFramework: 'react' },
+    }, '/tmp/electron-react')
+    const plan = buildFilePlan(resolved)
+    const configFile = plan.files.find((file) => file.path === 'electron.vite.config.ts')
+
+    expect(configFile?.content).toContain("@vitejs/plugin-react")
+    expect(configFile?.content).not.toContain("@vitejs/plugin-vue")
+    expect(plan.packageJson.devDependencies).toHaveProperty('@vitejs/plugin-react')
+  })
+
+  it('node-fullstack generates a prefixed React web app', () => {
+    const input: ScaffoldConfig = {
+      name: 'node-web',
+      stack: 'node-fullstack',
+      packageManager: 'pnpm',
+      choices: { webFramework: 'react' },
+    }
+    const resolved = resolveConfig(input, '/tmp/node-web')
+    const plan = buildFilePlan(resolved)
+    const filePaths = plan.files.map((f) => f.path)
+
+    expect(filePaths).toEqual(expect.arrayContaining([
+      'pnpm-workspace.yaml',
+      'apps/api/package.json',
+      'apps/api/src/server.ts',
+      'apps/web/package.json',
+      'apps/web/index.html',
+      'apps/web/src/main.tsx',
+      'apps/web/src/App.tsx',
+    ]))
+    expect(filePaths).not.toContain('src/shared/node/server.skeleton.ts')
+
+    const apiPackage = plan.files.find((file) => file.path === 'apps/api/package.json')
+    expect(apiPackage?.content).toContain('"hono"')
+    expect(apiPackage?.content).toContain('"tsx"')
   })
 
   it('node-fullstack API-only does not generate theme/i18n files', () => {

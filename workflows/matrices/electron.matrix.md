@@ -74,7 +74,7 @@ For large local data (always available regardless of `storage` choice), add SQLi
 | `electron.vite.config.ts` | Inline — three builds (main / preload / renderer) |
 | `tsconfig.json` (root) | `shared/snippets/config/tsconfig.strict.json` |
 | `tsconfig.main.json`, `tsconfig.preload.json` | Inline — extends root, sets `module: CommonJS` for main/preload |
-| `AGENT.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%STACK%` → `electron`, `%UI_LIBRARY%` filled from the renderer matrix's resolved `ui_library`; `%VIEWS_DIR%` / `%DATA_DIR%` / `%DATA_HOOK_PATTERN%` per renderer framework |
+| `AGENTS.md` | `shared/snippets/project-docs/AGENT.md.tmpl` — `%STACK%` → `electron`, `%UI_LIBRARY%` filled from the renderer matrix's resolved `ui_library`; `%VIEWS_DIR%` / `%DATA_DIR%` / `%DATA_HOOK_PATTERN%` per renderer framework |
 | `CLAUDE.md` | `shared/snippets/project-docs/CLAUDE.md.tmpl` |
 | `src/main/main.ts` | `shared/snippets/electron/main.security.ts` |
 | `src/preload/index.ts` | `shared/snippets/electron/preload.bridge.ts` |
@@ -92,7 +92,7 @@ After Stage 1, when `renderer_framework: vue` (or `react`) is selected:
 3. Generate every file the renderer matrix lists, **rooted at `src/renderer/` instead of `src/`**.
 4. Adjust the renderer's `vite.config.ts` content into the renderer build entry of the root `electron.vite.config.ts`.
 5. Skip the renderer matrix's `src/shared/http/client.ts` write — Electron renderer typically talks to main via IPC, not direct HTTP. If the project also needs HTTP, the user opts in during Stage 2.
-6. **Skip the renderer matrix's `AGENT.md` and `CLAUDE.md` writes.** The project has exactly one set of docs at the repo root (written by this matrix's Universal writes above) — they cover both the main and renderer layers. The values for `%UI_LIBRARY%` / `%STATE_LIB%` / `%DATA_LIB%` / etc. inside the root `AGENT.md` come from the renderer matrix's resolved choices, but the file itself is only written once.
+6. **Skip the renderer matrix's `AGENTS.md` and `CLAUDE.md` writes.** The project has exactly one set of docs at the repo root. Renderer choices populate the root `AGENTS.md` placeholders.
 
 ## Post-init CLI
 

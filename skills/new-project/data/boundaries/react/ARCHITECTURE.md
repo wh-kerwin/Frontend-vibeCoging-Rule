@@ -88,7 +88,7 @@ createRoot(document.getElementById('root')!).render(
 When the matrix selects shadcn/ui + Tailwind v4:
 
 - **Tailwind v4** owns colors/spacing/responsive. CSS-first config via `@theme inline` inside `src/shared/styles/tokens.css`.
-- **shadcn/ui** primitives in `src/components/ui/*`. Add via `pnpm dlx shadcn@latest add <name>`.
+- **shadcn/ui** primitives in `src/components/ui/*`. Add via the pinned project command, for example `pnpm dlx shadcn@2.4 add <name>`.
 - **UnoCSS** (optional hybrid) for shortcuts and icon utilities.
 
 Two token presets in `shared/snippets/styles/` — `tokens.shadcn.css` (default) and `tokens.voltagent.css` (dev-tool palette).

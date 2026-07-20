@@ -12,7 +12,8 @@
     "scaffold": "tsx src/cli.ts scaffold",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "bundle:check": "node ../skills/new-project/scripts/validate-bundle.mjs"
   },
   "dependencies": {
     "ajv": "^8.17.1",
