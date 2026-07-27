@@ -104,7 +104,7 @@
     "state": {
       "choices": {
         "pinia": {
-          "deps": { "pinia": "^2.2" },
+          "deps": { "pinia": "^3.0.4" },
           "writes": ["src/stores/"]
         },
         "none": {}
@@ -125,7 +125,7 @@
           "deps": {
             "vee-validate": "^4.13",
             "@vee-validate/zod": "^4.13",
-            "zod": "^4.4"
+            "zod": "^3.24"
           }
         },
         "none": {}

@@ -24,6 +24,20 @@ describe('buildFilePlan', () => {
     ]))
   })
 
+  it('uses peer-compatible Vue default dependencies', () => {
+    const resolved = resolveConfig({
+      name: 'test-vue-dependencies',
+      stack: 'vue',
+      packageManager: 'pnpm',
+    }, '/tmp/test-vue-dependencies')
+    const dependencies = buildFilePlan(resolved).packageJson.dependencies
+
+    expect(dependencies['@vee-validate/zod']).toBe('^4.13')
+    expect(dependencies.zod).toBe('^3.24')
+    expect(dependencies['vue-router']).toBe('^5.0')
+    expect(dependencies.pinia).toBe('^3.0.4')
+  })
+
   it('uses the selected VoltAgent token preset', () => {
     const resolved = resolveConfig({
       name: 'voltagent-react',

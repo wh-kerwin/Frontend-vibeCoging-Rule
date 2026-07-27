@@ -150,7 +150,7 @@ export default defineConfig({
 ### Choices.state
 
 #### `pinia` (default)
-- `deps`: `pinia ^2.2`
+- `deps`: `pinia ^3.0.4`
 - `writes`: wire `app.use(createPinia())` in `src/main.ts`. Create `src/stores/` directory.
 
 #### `none`
@@ -168,7 +168,7 @@ export default defineConfig({
 ### Choices.forms
 
 #### `vee-validate+zod` (default)
-- `deps`: `vee-validate ^4.13`, `@vee-validate/zod ^4.13`, `zod ^4.4`
+- `deps`: `vee-validate ^4.13`, `@vee-validate/zod ^4.13`, `zod ^3.24`
 
 #### `none`
 - No additional deps. Validate with Zod inline; no field-level integration.
